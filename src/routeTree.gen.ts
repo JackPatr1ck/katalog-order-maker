@@ -14,6 +14,8 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as SSlugRouteImport } from './routes/s.$slug'
+import { Route as OOrderIdRouteImport } from './routes/o.$orderId'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardCatalogRouteImport } from './routes/dashboard.catalog'
 
@@ -42,6 +44,16 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const SSlugRoute = SSlugRouteImport.update({
+  id: '/s/$slug',
+  path: '/s/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OOrderIdRoute = OOrderIdRouteImport.update({
+  id: '/o/$orderId',
+  path: '/o/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -60,6 +72,8 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/dashboard/catalog': typeof DashboardCatalogRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/o/$orderId': typeof OOrderIdRoute
+  '/s/$slug': typeof SSlugRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -68,6 +82,8 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/dashboard/catalog': typeof DashboardCatalogRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/o/$orderId': typeof OOrderIdRoute
+  '/s/$slug': typeof SSlugRoute
   '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -78,6 +94,8 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/dashboard/catalog': typeof DashboardCatalogRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/o/$orderId': typeof OOrderIdRoute
+  '/s/$slug': typeof SSlugRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
@@ -89,6 +107,8 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/dashboard/catalog'
     | '/dashboard/settings'
+    | '/o/$orderId'
+    | '/s/$slug'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -97,6 +117,8 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/dashboard/catalog'
     | '/dashboard/settings'
+    | '/o/$orderId'
+    | '/s/$slug'
     | '/dashboard'
   id:
     | '__root__'
@@ -106,6 +128,8 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/dashboard/catalog'
     | '/dashboard/settings'
+    | '/o/$orderId'
+    | '/s/$slug'
     | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -114,6 +138,8 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   OnboardingRoute: typeof OnboardingRoute
+  OOrderIdRoute: typeof OOrderIdRoute
+  SSlugRoute: typeof SSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -153,6 +179,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/s/$slug': {
+      id: '/s/$slug'
+      path: '/s/$slug'
+      fullPath: '/s/$slug'
+      preLoaderRoute: typeof SSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/o/$orderId': {
+      id: '/o/$orderId'
+      path: '/o/$orderId'
+      fullPath: '/o/$orderId'
+      preLoaderRoute: typeof OOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/settings': {
       id: '/dashboard/settings'
       path: '/settings'
@@ -191,6 +231,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   DashboardRoute: DashboardRouteWithChildren,
   OnboardingRoute: OnboardingRoute,
+  OOrderIdRoute: OOrderIdRoute,
+  SSlugRoute: SSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

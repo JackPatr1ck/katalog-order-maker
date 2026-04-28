@@ -6,9 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { ShoppingBag, Loader2, Eye, EyeOff } from "lucide-react";
+import authIllustration from "@/assets/auth-illustration.jpg";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional().default("signin"),
@@ -37,7 +38,6 @@ function AuthPage() {
 
   useEffect(() => setIsSignup(mode === "signup"), [mode]);
 
-  // If already authenticated, route based on whether profile exists
   useEffect(() => {
     if (authLoading || !user) return;
     (async () => {
@@ -77,37 +77,60 @@ function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-subtle flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <div className="size-9 rounded-lg bg-hero shadow-elegant flex items-center justify-center">
-            <ShoppingBag className="size-4 text-primary-foreground" strokeWidth={2.5} />
-          </div>
-          <span className="font-display font-bold text-2xl">katalog</span>
-        </Link>
-        <Card className="shadow-elegant border-border">
-          <CardHeader>
-            <CardTitle className="font-display text-2xl">
-              {isSignup ? "Create your account" : "Welcome back"}
-            </CardTitle>
-            <CardDescription>
-              {isSignup ? "Step 1 of 2 — let's get you in." : "Sign in to manage your shop."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+    <div className="min-h-screen bg-subtle p-4 lg:p-6">
+      <div className="mx-auto max-w-7xl bg-card rounded-3xl shadow-card overflow-hidden grid lg:grid-cols-2 min-h-[calc(100vh-2rem)] lg:min-h-[calc(100vh-3rem)]">
+        {/* Left: form */}
+        <div className="flex flex-col px-6 py-8 sm:px-10 sm:py-10 lg:px-16 lg:py-12">
+          <Link to="/" className="flex items-center gap-2 mb-12 lg:mb-16">
+            <div className="size-8 rounded-lg bg-hero shadow-elegant flex items-center justify-center">
+              <ShoppingBag className="size-4 text-primary-foreground" strokeWidth={2.5} />
+            </div>
+            <span className="font-display font-bold text-xl">katalog</span>
+          </Link>
+
+          <div className="flex-1 flex flex-col justify-center max-w-md w-full mx-auto lg:mx-0">
+            <h1 className="font-display font-bold text-4xl sm:text-5xl tracking-tight text-foreground">
+              {isSignup ? (
+                <>Hey there,<br />Welcome</>
+              ) : (
+                <>Holla,<br />Welcome Back</>
+              )}
+            </h1>
+            <p className="mt-4 text-muted-foreground">
+              {isSignup ? "Let's set up your shop and start selling on WhatsApp." : "Hey, welcome back to your special place"}
+            </p>
+
+            <form onSubmit={handleSubmit} className="mt-10 space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="sr-only">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email"
+                  className="h-12 rounded-xl bg-secondary/50 border-border px-4"
+                />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="sr-only">Password</Label>
                 <div className="relative">
-                  <Input id="password" type={showPassword ? "text" : "password"} autoComplete={isSignup ? "new-password" : "current-password"} required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" className="pr-10" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete={isSignup ? "new-password" : "current-password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Password"
+                    className="h-12 rounded-xl bg-secondary/50 border-border px-4 pr-12"
+                  />
                   <button
                     type="button"
                     onClick={() => setShowPassword((s) => !s)}
-                    className="absolute inset-y-0 right-0 z-10 flex items-center px-3 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                    className="absolute inset-y-0 right-0 z-10 flex items-center px-4 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     tabIndex={-1}
                   >
@@ -115,22 +138,51 @@ function AuthPage() {
                   </button>
                 </div>
               </div>
-              <Button type="submit" className="w-full shadow-elegant" disabled={submitting}>
+
+              {!isSignup && (
+                <div className="flex items-center justify-between pt-1">
+                  <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
+                    <Checkbox id="remember" />
+                    <span>Remember me</span>
+                  </label>
+                  <button type="button" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    Forgot Password?
+                  </button>
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                className="h-12 px-8 rounded-xl shadow-elegant mt-4"
+                disabled={submitting}
+              >
                 {submitting && <Loader2 className="size-4 animate-spin mr-2" />}
-                {isSignup ? "Create account" : "Sign in"}
+                {isSignup ? "Sign Up" : "Sign In"}
               </Button>
             </form>
-            <p className="mt-6 text-sm text-center text-muted-foreground">
-              {isSignup ? "Already have an account?" : "New to Katalog?"}{" "}
+
+            <p className="mt-12 text-sm text-muted-foreground">
+              {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
               <button
                 onClick={() => navigate({ to: "/auth", search: { mode: isSignup ? "signin" : "signup" } })}
-                className="text-primary font-medium hover:underline"
+                className="text-primary font-semibold hover:underline"
               >
-                {isSignup ? "Sign in" : "Create one"}
+                {isSignup ? "Sign In" : "Sign Up"}
               </button>
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+
+        {/* Right: illustration */}
+        <div className="hidden lg:block relative bg-hero overflow-hidden">
+          <img
+            src={authIllustration}
+            alt="Vendor managing online shop on WhatsApp"
+            width={1024}
+            height={1280}
+            className="absolute inset-0 size-full object-cover"
+          />
+        </div>
       </div>
     </div>
   );

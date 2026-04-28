@@ -42,11 +42,11 @@ function DashboardLayout() {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
   }
 
-  const nav = [
+  const nav: Array<{ to: string; label: string; icon: typeof Package; exact?: boolean }> = [
     { to: "/dashboard", label: "Orders", icon: ListOrdered, exact: true },
     { to: "/dashboard/catalog", label: "Catalog", icon: Package },
     { to: "/dashboard/settings", label: "Settings", icon: Settings },
-  ] as const;
+  ];
 
   const isActive = (to: string, exact?: boolean) =>
     exact ? location.pathname === to : location.pathname.startsWith(to);

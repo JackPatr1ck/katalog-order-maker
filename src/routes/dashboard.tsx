@@ -12,7 +12,6 @@ import {
   User,
   LogOut,
   ExternalLink,
-  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -213,5 +212,3 @@ function DashboardLayout() {
   );
 }
 
-// keep imports referenced
-void X;

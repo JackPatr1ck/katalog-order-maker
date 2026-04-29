@@ -5,13 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   Loader2,
   Menu,
-  Search,
   LayoutGrid,
   Package,
   Globe,
   User,
   LogOut,
   ExternalLink,
+  Copy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 const PAGE_TITLES: Record<string, string> = {
-  "/dashboard": "Catalog MVP",
+  "/dashboard": "Overview",
   "/dashboard/catalog": "Products",
   "/dashboard/settings": "Profile",
 };
@@ -75,10 +75,10 @@ function DashboardLayout() {
     );
   }
 
-  const tabs = [
-    { to: "/dashboard", label: "Dashboard", icon: LayoutGrid, exact: true },
+  const navItems = [
+    { to: "/dashboard", label: "Overview", icon: LayoutGrid, exact: true },
     { to: "/dashboard/catalog", label: "Products", icon: Package },
-    { to: `/s/${profile.slug}`, label: "Catalog", icon: Globe, external: true },
+    { to: `/s/${profile.slug}`, label: "Catalog Link", icon: Globe, external: true },
     { to: "/dashboard/settings", label: "Profile", icon: User },
   ];
 
@@ -86,66 +86,123 @@ function DashboardLayout() {
     exact ? location.pathname === to : location.pathname.startsWith(to);
 
   const storefrontUrl = `${window.location.origin}/s/${profile.slug}`;
-  const title = PAGE_TITLES[location.pathname] ?? "Catalog MVP";
+  const title = PAGE_TITLES[location.pathname] ?? "Dashboard";
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate({ to: "/" });
+  };
+
+  const NavList = ({ onNavigate }: { onNavigate?: () => void }) => (
+    <nav className="space-y-1">
+      {navItems.map((item) => {
+        const active = !item.external && isActive(item.to, item.exact);
+        const Icon = item.icon;
+        const baseCls =
+          "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors";
+        const stateCls = active
+          ? "bg-accent text-accent-foreground"
+          : "text-muted-foreground hover:bg-accent/40 hover:text-foreground";
+        return item.external ? (
+          <a
+            key={item.to}
+            href={item.to}
+            target="_blank"
+            rel="noreferrer"
+            onClick={onNavigate}
+            className={`${baseCls} ${stateCls}`}
+          >
+            <Icon className="size-4" />
+            <span className="flex-1">{item.label}</span>
+            <ExternalLink className="size-3.5 opacity-60" />
+          </a>
+        ) : (
+          <Link
+            key={item.to}
+            to={item.to}
+            onClick={onNavigate}
+            className={`${baseCls} ${stateCls}`}
+          >
+            <Icon className="size-4" />
+            <span>{item.label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
 
   return (
-    <div className="min-h-screen bg-subtle pb-24">
-      {/* Top app bar */}
-      <header className="bg-background border-b border-border sticky top-0 z-40">
-        <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between gap-3">
+    <div className="min-h-screen bg-background flex flex-col lg:flex-row">
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 lg:left-0 border-r border-border bg-background">
+        <div className="px-7 py-7 border-b border-border">
+          <Link to="/dashboard" className="block">
+            <h1 className="font-display text-2xl font-semibold text-primary tracking-tight">
+              Katalog
+            </h1>
+            <p className="text-xs text-muted-foreground mt-1 truncate">
+              {profile.business_name}
+            </p>
+          </Link>
+        </div>
+
+        <div className="flex-1 px-5 py-7 overflow-y-auto">
+          <p className="px-3 text-[10px] font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-3">
+            Workspace
+          </p>
+          <NavList />
+        </div>
+
+        <div className="p-5 border-t border-border space-y-2">
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(storefrontUrl);
+              toast.success("Shop link copied");
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-accent/40 hover:text-foreground transition-colors"
+          >
+            <Copy className="size-3.5 shrink-0" />
+            <span className="truncate">/{profile.slug}</span>
+          </button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-2 text-muted-foreground"
+            onClick={handleSignOut}
+          >
+            <LogOut className="size-4" /> Sign out
+          </Button>
+        </div>
+      </aside>
+
+      {/* Mobile top bar */}
+      <header className="lg:hidden bg-background border-b border-border sticky top-0 z-40">
+        <div className="px-4 h-14 flex items-center justify-between gap-3">
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="-ml-2">
                 <Menu className="size-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 p-0">
-              <div className="p-5 border-b border-border">
-                <p className="font-display font-bold text-lg leading-tight">
+            <SheetContent side="left" className="w-72 p-0 flex flex-col">
+              <div className="px-6 py-6 border-b border-border">
+                <h1 className="font-display text-xl font-semibold text-primary">
+                  Katalog
+                </h1>
+                <p className="text-xs text-muted-foreground mt-1 truncate">
                   {profile.business_name}
                 </p>
-                <p className="text-xs text-muted-foreground truncate mt-0.5">
-                  /{profile.slug}
-                </p>
               </div>
-              <nav className="p-3 space-y-1">
-                {tabs.map((t) =>
-                  t.external ? (
-                    <a
-                      key={t.to}
-                      href={t.to}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-accent/50 hover:text-foreground transition-colors"
-                    >
-                      <t.icon className="size-4" /> {t.label}
-                      <ExternalLink className="size-3 ml-auto" />
-                    </a>
-                  ) : (
-                    <Link
-                      key={t.to}
-                      to={t.to}
-                      onClick={() => setMenuOpen(false)}
-                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                        isActive(t.to, t.exact)
-                          ? "bg-accent text-accent-foreground"
-                          : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-                      }`}
-                    >
-                      <t.icon className="size-4" /> {t.label}
-                    </Link>
-                  )
-                )}
-              </nav>
-              <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-border">
+              <div className="flex-1 px-4 py-5 overflow-y-auto">
+                <p className="px-3 text-[10px] font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-3">
+                  Workspace
+                </p>
+                <NavList onNavigate={() => setMenuOpen(false)} />
+              </div>
+              <div className="p-4 border-t border-border">
                 <Button
                   variant="ghost"
-                  className="w-full justify-start gap-2"
-                  onClick={async () => {
-                    await signOut();
-                    navigate({ to: "/" });
-                  }}
+                  className="w-full justify-start gap-2 text-muted-foreground"
+                  onClick={handleSignOut}
                 >
                   <LogOut className="size-4" /> Sign out
                 </Button>
@@ -167,48 +224,17 @@ function DashboardLayout() {
             }}
             aria-label="Copy shop link"
           >
-            <Search className="size-5" />
+            <Copy className="size-5" />
           </Button>
         </div>
       </header>
 
-      {/* Page content */}
-      <div className="max-w-3xl mx-auto px-4 py-5">
-        <Outlet />
-      </div>
-
-      {/* Bottom tab nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border">
-        <div className="max-w-3xl mx-auto grid grid-cols-4">
-          {tabs.map((t) => {
-            const active = !t.external && isActive(t.to, t.exact);
-            const Icon = t.icon;
-            const className = `flex flex-col items-center justify-center gap-1 py-2.5 text-[11px] font-medium transition-colors ${
-              active
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground"
-            }`;
-            return t.external ? (
-              <a
-                key={t.to}
-                href={t.to}
-                target="_blank"
-                rel="noreferrer"
-                className={className}
-              >
-                <Icon className="size-5" strokeWidth={active ? 2.4 : 2} />
-                {t.label}
-              </a>
-            ) : (
-              <Link key={t.to} to={t.to} className={className}>
-                <Icon className="size-5" strokeWidth={active ? 2.4 : 2} />
-                {t.label}
-              </Link>
-            );
-          })}
+      {/* Main content */}
+      <main className="flex-1 lg:ml-72 min-w-0">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 py-6 lg:py-12">
+          <Outlet />
         </div>
-      </nav>
+      </main>
     </div>
   );
 }
-

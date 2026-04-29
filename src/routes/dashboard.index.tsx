@@ -7,14 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Loader2,
-  Link as LinkIcon,
   Copy,
   Package2,
   Plus,
   ArrowRight,
   Receipt,
-  ChevronRight,
-  Inbox,
   Download,
 } from "lucide-react";
 import { formatMoney } from "@/lib/format";
@@ -147,166 +144,194 @@ function DashboardHome() {
   const shortUrl = `${window.location.host}/s/${slug}`;
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-12">
       {/* Greeting */}
       <section>
-        <h1 className="font-display text-3xl font-bold tracking-tight">
-          Hi, {businessName}
+        <p className="text-xs font-semibold tracking-[0.18em] uppercase text-muted-foreground mb-3">
+          Dashboard
+        </p>
+        <h1 className="font-display text-3xl lg:text-4xl font-semibold text-primary tracking-tight">
+          Welcome, {businessName}
         </h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Here's what's happening with your catalog today.
+        <p className="text-muted-foreground text-base mt-2 max-w-xl">
+          Curate your offerings with precision.
         </p>
       </section>
 
       {/* Public catalog card */}
-      <Card className="p-5 shadow-card border-border">
-        <p className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
-          Your Public Catalog
+      <Card className="p-6 lg:p-8 border-border shadow-lg shadow-accent/30 bg-background">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-medium text-muted-foreground">
+              Your Public Catalog Link
+            </p>
+            <a
+              href={storefrontUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="font-display text-base lg:text-lg truncate font-medium text-primary hover:underline mt-1 block"
+            >
+              {shortUrl}
+            </a>
+          </div>
+          <Button
+            className="shrink-0 gap-2"
+            onClick={() => {
+              navigator.clipboard.writeText(storefrontUrl);
+              toast.success("Link copied");
+            }}
+          >
+            <Copy className="size-4" /> Copy Link
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground mt-4">
+          Share this link to let customers browse your catalog.
         </p>
-        <a
-          href={storefrontUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-2 flex items-center gap-2 text-primary font-medium text-sm break-all hover:underline"
-        >
-          <LinkIcon className="size-4 shrink-0" />
-          <span className="truncate">{shortUrl}</span>
-        </a>
-        <Button
-          variant="secondary"
-          size="sm"
-          className="mt-4 gap-2 bg-accent text-accent-foreground hover:bg-accent/80"
-          onClick={() => {
-            navigator.clipboard.writeText(storefrontUrl);
-            toast.success("Link copied");
-          }}
-        >
-          <Copy className="size-3.5" /> Copy Link
-        </Button>
       </Card>
 
-      {/* Products */}
-      <section>
-        <div className="flex items-end justify-between border-b border-border pb-2 mb-3">
-          <h2 className="font-display text-2xl font-bold">Products</h2>
-          <Link
-            to="/dashboard/catalog"
-            className="text-primary text-sm font-medium inline-flex items-center gap-1 hover:underline"
-          >
-            View All <ArrowRight className="size-3.5" />
-          </Link>
-        </div>
+      {/* Two-column section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        {/* Products */}
+        <section>
+          <div className="flex items-end justify-between mb-5">
+            <h2 className="font-display text-xl font-semibold">
+              Recent Products
+            </h2>
+            <Link
+              to="/dashboard/catalog"
+              className="text-primary text-sm font-medium inline-flex items-center gap-1 hover:underline"
+            >
+              View All <ArrowRight className="size-3.5" />
+            </Link>
+          </div>
 
-        {products.length === 0 ? (
-          <Card className="p-8 text-center shadow-card">
-            <div className="mx-auto size-14 rounded-2xl bg-accent flex items-center justify-center mb-4">
-              <Package2 className="size-6 text-primary" />
-            </div>
-            <h3 className="font-display text-lg font-semibold">No products yet</h3>
-            <p className="text-muted-foreground text-sm mt-1.5 max-w-xs mx-auto">
-              Start building your catalog by adding your first product. It only
-              takes a few minutes.
-            </p>
-            <Button asChild className="mt-5 gap-2">
-              <Link to="/dashboard/catalog">
-                <Plus className="size-4" /> Add Product
-              </Link>
-            </Button>
-          </Card>
-        ) : (
-          <Card className="shadow-card overflow-hidden">
-            <div className="divide-y divide-border">
+          {products.length === 0 ? (
+            <Card className="p-8 text-center">
+              <div className="mx-auto size-12 rounded-2xl bg-accent flex items-center justify-center mb-4">
+                <Package2 className="size-5 text-primary" />
+              </div>
+              <h3 className="font-display text-base font-semibold">
+                No products yet
+              </h3>
+              <p className="text-muted-foreground text-sm mt-1.5 max-w-xs mx-auto">
+                Start building your catalog by adding your first product.
+              </p>
+              <Button asChild className="mt-5 gap-2" size="sm">
+                <Link to="/dashboard/catalog">
+                  <Plus className="size-4" /> Add Product
+                </Link>
+              </Button>
+            </Card>
+          ) : (
+            <div className="space-y-4">
               {products.map((p) => (
                 <Link
                   key={p.id}
                   to="/dashboard/catalog"
-                  className="flex items-center gap-3 p-3 hover:bg-accent/30 transition-colors"
+                  className="flex items-center gap-4 group"
                 >
-                  <div className="size-12 rounded-lg bg-accent overflow-hidden shrink-0 flex items-center justify-center">
+                  <div className="size-16 rounded-lg bg-accent overflow-hidden shrink-0 flex items-center justify-center">
                     {p.image_url ? (
-                      <img src={p.image_url} alt={p.name} className="size-full object-cover" />
+                      <img
+                        src={p.image_url}
+                        alt={p.name}
+                        className="size-full object-cover"
+                      />
                     ) : (
                       <Package2 className="size-5 text-primary" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate">{p.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Stock: {p.stock}
+                    <p className="font-medium text-sm truncate group-hover:text-primary transition-colors">
+                      {p.name}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatMoney(p.price_cents, currency)}
                     </p>
                   </div>
-                  <p className="font-semibold text-sm shrink-0">
-                    {formatMoney(p.price_cents, currency)}
-                  </p>
+                  <span
+                    className={`shrink-0 text-[11px] px-2.5 py-0.5 rounded-full font-medium ${
+                      p.stock <= 5
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-accent text-accent-foreground"
+                    }`}
+                  >
+                    {p.stock <= 0
+                      ? "Out"
+                      : p.stock <= 5
+                      ? `Low · ${p.stock}`
+                      : `${p.stock} in stock`}
+                  </span>
                 </Link>
               ))}
             </div>
-          </Card>
-        )}
-      </section>
-
-      {/* Recent Orders */}
-      <section>
-        <div className="flex items-end justify-between border-b border-border pb-2 mb-3">
-          <h2 className="font-display text-2xl font-bold">Recent Orders</h2>
-          {orders.length > 0 && (
-            <button
-              onClick={exportCSV}
-              className="text-primary text-sm font-medium inline-flex items-center gap-1 hover:underline"
-            >
-              <Download className="size-3.5" /> Export
-            </button>
           )}
-        </div>
+        </section>
 
-        {orders.length === 0 ? (
-          <Card className="p-10 text-center shadow-card">
-            <Receipt className="size-7 text-muted-foreground mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">
-              No recent orders to display.
-            </p>
-          </Card>
-        ) : (
-          <Card className="shadow-card overflow-hidden">
-            <div className="divide-y divide-border">
+        {/* Recent Orders */}
+        <section>
+          <div className="flex items-end justify-between mb-5">
+            <h2 className="font-display text-xl font-semibold">
+              Recent Orders
+            </h2>
+            {orders.length > 0 && (
+              <button
+                onClick={exportCSV}
+                className="text-primary text-sm font-medium inline-flex items-center gap-1 hover:underline"
+              >
+                <Download className="size-3.5" /> Export
+              </button>
+            )}
+          </div>
+
+          {orders.length === 0 ? (
+            <Card className="p-10 text-center">
+              <Receipt className="size-7 text-muted-foreground mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground">
+                No recent orders to display.
+              </p>
+            </Card>
+          ) : (
+            <div className="space-y-4">
               {orders.map((o) => (
                 <button
                   key={o.id}
                   onClick={() => openOrder(o)}
-                  className="w-full flex items-center gap-3 p-4 hover:bg-accent/30 transition-colors text-left"
+                  className="w-full flex items-center justify-between gap-3 text-left group"
                 >
-                  <div className="size-10 rounded-lg bg-accent flex items-center justify-center shrink-0">
-                    <Receipt className="size-4 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-sm">#{o.order_number}</p>
-                      <Badge
-                        variant={o.status === "new" ? "default" : "secondary"}
-                        className="text-[10px] capitalize px-1.5 py-0"
-                      >
-                        {o.status}
-                      </Badge>
-                    </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm group-hover:text-primary transition-colors">
+                      #{o.order_number}
+                    </p>
                     <p className="text-xs text-muted-foreground truncate">
-                      {o.customer_name}
+                      {o.customer_name} · {formatMoney(o.total_cents, currency)}
                     </p>
                   </div>
-                  <div className="text-right shrink-0">
-                    <p className="font-semibold text-sm">
-                      {formatMoney(o.total_cents, currency)}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {new Date(o.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <ChevronRight className="size-4 text-muted-foreground shrink-0" />
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] capitalize shrink-0 bg-accent text-accent-foreground hover:bg-accent"
+                  >
+                    {o.status}
+                  </Badge>
                 </button>
               ))}
             </div>
-          </Card>
-        )}
-      </section>
+          )}
+        </section>
+      </div>
+
+      {/* Footer export */}
+      {orders.length > 0 && (
+        <div className="pt-8 border-t border-border flex justify-end">
+          <Button
+            variant="outline"
+            onClick={exportCSV}
+            className="gap-2"
+          >
+            <Download className="size-4" /> Export Orders to CSV
+          </Button>
+        </div>
+      )}
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
         <DialogContent className="max-w-lg">
@@ -364,10 +389,6 @@ function DashboardHome() {
           )}
         </DialogContent>
       </Dialog>
-
-      <div className="hidden">
-        <Inbox />
-      </div>
     </div>
   );
 }

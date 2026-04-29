@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, useNavigate, Link, useLocation } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -12,9 +12,14 @@ import {
   LogOut,
   ExternalLink,
   Copy,
+  Receipt,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { formatMoney } from "@/lib/format";
 import { toast } from "sonner";
 
 export interface VendorProfile {
@@ -25,6 +30,25 @@ export interface VendorProfile {
   logo_url: string | null;
   description: string | null;
   currency: string;
+}
+
+interface OrderRow {
+  id: string;
+  order_number: number;
+  customer_name: string;
+  customer_phone: string;
+  delivery_address: string;
+  note: string | null;
+  total_cents: number;
+  status: string;
+  created_at: string;
+}
+
+interface OrderItemRow {
+  id: string;
+  product_name: string;
+  unit_price_cents: number;
+  quantity: number;
 }
 
 export const Route = createFileRoute("/dashboard")({
@@ -45,6 +69,9 @@ function DashboardLayout() {
   const [profile, setProfile] = useState<VendorProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [orders, setOrders] = useState<OrderRow[]>([]);
+  const [selected, setSelected] = useState<OrderRow | null>(null);
+  const [items, setItems] = useState<OrderItemRow[]>([]);
 
   useEffect(() => {
     if (loading) return;
@@ -66,6 +93,22 @@ function DashboardLayout() {
         setProfileLoading(false);
       });
   }, [user, loading, navigate]);
+
+  const loadOrders = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("vendor_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(8);
+    setOrders((data ?? []) as OrderRow[]);
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    void loadOrders();
+  }, [user, loadOrders]);
 
   if (loading || profileLoading || !profile) {
     return (
@@ -92,6 +135,40 @@ function DashboardLayout() {
     await signOut();
     navigate({ to: "/" });
   };
+
+  async function openOrder(o: OrderRow) {
+    setSelected(o);
+    const { data } = await supabase
+      .from("order_items")
+      .select("*")
+      .eq("order_id", o.id);
+    setItems((data ?? []) as OrderItemRow[]);
+  }
+
+  function exportCSV() {
+    if (!orders.length) return;
+    const headers = ["Order #", "Date", "Customer", "Phone", "Address", "Total", "Status", "Note"];
+    const rows = orders.map((o) => [
+      o.order_number,
+      new Date(o.created_at).toISOString(),
+      o.customer_name,
+      o.customer_phone,
+      o.delivery_address.replace(/\n/g, " "),
+      (o.total_cents / 100).toFixed(2),
+      o.status,
+      (o.note ?? "").replace(/\n/g, " "),
+    ]);
+    const csv = [headers, ...rows]
+      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `katalog-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   const NavList = ({ onNavigate }: { onNavigate?: () => void }) => (
     <nav className="space-y-1">
@@ -131,6 +208,60 @@ function DashboardLayout() {
     </nav>
   );
 
+  const OrdersList = ({ onSelect }: { onSelect?: () => void }) => (
+    <div>
+      <div className="flex items-center justify-between px-3 mb-3">
+        <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-muted-foreground">
+          Recent Orders
+        </p>
+        {orders.length > 0 && (
+          <button
+            onClick={exportCSV}
+            className="text-primary text-[11px] font-medium inline-flex items-center gap-1 hover:underline"
+            aria-label="Export orders"
+          >
+            <Download className="size-3" /> CSV
+          </button>
+        )}
+      </div>
+      {orders.length === 0 ? (
+        <div className="px-3 py-6 text-center">
+          <Receipt className="size-5 text-muted-foreground mx-auto mb-2" />
+          <p className="text-xs text-muted-foreground">No orders yet</p>
+        </div>
+      ) : (
+        <ul className="space-y-0.5">
+          {orders.map((o) => (
+            <li key={o.id}>
+              <button
+                onClick={() => {
+                  void openOrder(o);
+                  onSelect?.();
+                }}
+                className="w-full flex items-center justify-between gap-2 text-left px-3 py-2 rounded-lg hover:bg-accent/40 transition-colors group"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-medium group-hover:text-primary transition-colors">
+                    #{o.order_number} · {formatMoney(o.total_cents, profile.currency)}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground truncate">
+                    {o.customer_name}
+                  </p>
+                </div>
+                <Badge
+                  variant="secondary"
+                  className="text-[9px] capitalize shrink-0 bg-accent text-accent-foreground hover:bg-accent px-1.5 py-0"
+                >
+                  {o.status}
+                </Badge>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background flex flex-col lg:flex-row">
       {/* Desktop sidebar */}
@@ -146,11 +277,16 @@ function DashboardLayout() {
           </Link>
         </div>
 
-        <div className="flex-1 px-5 py-7 overflow-y-auto">
-          <p className="px-3 text-[10px] font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-3">
-            Workspace
-          </p>
-          <NavList />
+        <div className="flex-1 px-5 py-7 overflow-y-auto space-y-7">
+          <div>
+            <p className="px-3 text-[10px] font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-3">
+              Workspace
+            </p>
+            <NavList />
+          </div>
+          <div className="border-t border-border pt-6">
+            <OrdersList />
+          </div>
         </div>
 
         <div className="p-5 border-t border-border space-y-2">
@@ -192,11 +328,16 @@ function DashboardLayout() {
                   {profile.business_name}
                 </p>
               </div>
-              <div className="flex-1 px-4 py-5 overflow-y-auto">
-                <p className="px-3 text-[10px] font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-3">
-                  Workspace
-                </p>
-                <NavList onNavigate={() => setMenuOpen(false)} />
+              <div className="flex-1 px-4 py-5 overflow-y-auto space-y-6">
+                <div>
+                  <p className="px-3 text-[10px] font-semibold tracking-[0.15em] uppercase text-muted-foreground mb-3">
+                    Workspace
+                  </p>
+                  <NavList onNavigate={() => setMenuOpen(false)} />
+                </div>
+                <div className="border-t border-border pt-5">
+                  <OrdersList onSelect={() => setMenuOpen(false)} />
+                </div>
               </div>
               <div className="p-4 border-t border-border">
                 <Button
@@ -235,6 +376,63 @@ function DashboardLayout() {
           <Outlet />
         </div>
       </main>
+
+      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+        <DialogContent className="max-w-lg">
+          {selected && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="font-display">
+                  Order #{selected.order_number}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="text-sm space-y-1">
+                  <p>
+                    <span className="text-muted-foreground">Customer:</span>{" "}
+                    {selected.customer_name}
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">Phone:</span>{" "}
+                    {selected.customer_phone}
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">Address:</span>{" "}
+                    {selected.delivery_address}
+                  </p>
+                  {selected.note && (
+                    <p>
+                      <span className="text-muted-foreground">Note:</span>{" "}
+                      {selected.note}
+                    </p>
+                  )}
+                </div>
+                <div className="border-t border-border pt-4">
+                  <p className="text-xs font-medium text-muted-foreground mb-2">
+                    ITEMS
+                  </p>
+                  <div className="space-y-2">
+                    {items.map((it) => (
+                      <div key={it.id} className="flex justify-between text-sm">
+                        <span>
+                          {it.quantity}× {it.product_name}
+                        </span>
+                        <span className="font-medium">
+                          {formatMoney(it.unit_price_cents * it.quantity, profile.currency)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="border-t border-border pt-4 flex justify-between font-semibold">
+                  <span>Total</span>
+                  <span>{formatMoney(selected.total_cents, profile.currency)}</span>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

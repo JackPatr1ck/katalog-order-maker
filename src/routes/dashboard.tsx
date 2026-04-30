@@ -267,13 +267,26 @@ function DashboardLayout() {
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 lg:left-0 border-r border-border bg-background">
         <div className="px-7 py-7 border-b border-border">
-          <Link to="/dashboard" className="block">
-            <h1 className="font-display text-2xl font-semibold text-primary tracking-tight">
-              Katalog
-            </h1>
-            <p className="text-xs text-muted-foreground mt-1 truncate">
-              {profile.business_name}
-            </p>
+          <Link to="/dashboard" className="flex items-center gap-3">
+            {profile.logo_url ? (
+              <img
+                src={profile.logo_url}
+                alt={profile.business_name}
+                className="size-11 rounded-full object-cover border border-border shrink-0"
+              />
+            ) : (
+              <div className="size-11 rounded-full bg-accent flex items-center justify-center shrink-0">
+                <span className="font-display font-semibold text-primary text-base">
+                  {profile.business_name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            )}
+            <div className="min-w-0">
+              <h1 className="font-display text-lg font-semibold text-primary tracking-tight leading-tight truncate">
+                {profile.business_name}
+              </h1>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Katalog workspace</p>
+            </div>
           </Link>
         </div>
 
@@ -320,13 +333,26 @@ function DashboardLayout() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-72 p-0 flex flex-col">
-              <div className="px-6 py-6 border-b border-border">
-                <h1 className="font-display text-xl font-semibold text-primary">
-                  Katalog
-                </h1>
-                <p className="text-xs text-muted-foreground mt-1 truncate">
-                  {profile.business_name}
-                </p>
+              <div className="px-6 py-6 border-b border-border flex items-center gap-3">
+                {profile.logo_url ? (
+                  <img
+                    src={profile.logo_url}
+                    alt={profile.business_name}
+                    className="size-10 rounded-full object-cover border border-border shrink-0"
+                  />
+                ) : (
+                  <div className="size-10 rounded-full bg-accent flex items-center justify-center shrink-0">
+                    <span className="font-display font-semibold text-primary text-sm">
+                      {profile.business_name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <h1 className="font-display text-base font-semibold text-primary leading-tight truncate">
+                    {profile.business_name}
+                  </h1>
+                  <p className="text-[11px] text-muted-foreground">Katalog workspace</p>
+                </div>
               </div>
               <div className="flex-1 px-4 py-5 overflow-y-auto space-y-6">
                 <div>

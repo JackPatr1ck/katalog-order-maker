@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, Copy, ExternalLink } from "lucide-react";
+import { Loader2, Copy, ExternalLink, Upload, Trash2, ImageOff } from "lucide-react";
 import { z } from "zod";
 import { normalizeWhatsApp, slugify } from "@/lib/format";
 
@@ -35,6 +35,8 @@ function SettingsPage() {
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
   const [currency, setCurrency] = useState("USD");
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -45,10 +47,45 @@ function SettingsPage() {
         setSlug(data.slug);
         setDescription(data.description ?? "");
         setCurrency(data.currency);
+        setLogoUrl(data.logo_url ?? null);
       }
       setLoading(false);
     });
   }, [user]);
+
+  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !user) return;
+    if (!file.type.startsWith("image/")) { toast.error("Please select an image"); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error("Image must be under 2MB"); return; }
+
+    setUploadingLogo(true);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "png";
+      const path = `${user.id}/logo-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("product-images").upload(path, file, { upsert: true });
+      if (upErr) throw upErr;
+      const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
+      const newUrl = pub.publicUrl;
+      const { error: dbErr } = await supabase.from("vendor_profiles").update({ logo_url: newUrl }).eq("user_id", user.id);
+      if (dbErr) throw dbErr;
+      setLogoUrl(newUrl);
+      toast.success("Logo updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploadingLogo(false);
+    }
+  }
+
+  async function removeLogo() {
+    if (!user) return;
+    const { error } = await supabase.from("vendor_profiles").update({ logo_url: null }).eq("user_id", user.id);
+    if (error) { toast.error(error.message); return; }
+    setLogoUrl(null);
+    toast.success("Logo removed");
+  }
 
   async function save() {
     if (!user) return;
@@ -88,6 +125,33 @@ function SettingsPage() {
       </Card>
 
       <Card className="p-5 shadow-card space-y-4">
+        <div className="space-y-2">
+          <Label>Business logo</Label>
+          <div className="flex items-center gap-4">
+            <div className="size-20 rounded-full bg-muted flex items-center justify-center overflow-hidden border border-border shrink-0">
+              {logoUrl ? (
+                <img src={logoUrl} alt="Logo" className="size-full object-cover" />
+              ) : (
+                <ImageOff className="size-6 text-muted-foreground" />
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild variant="outline" size="sm" disabled={uploadingLogo}>
+                <label className="cursor-pointer">
+                  {uploadingLogo ? <Loader2 className="size-4 animate-spin mr-2" /> : <Upload className="size-4 mr-2" />}
+                  {logoUrl ? "Replace" : "Upload"}
+                  <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} disabled={uploadingLogo} />
+                </label>
+              </Button>
+              {logoUrl && (
+                <Button variant="ghost" size="sm" onClick={removeLogo} className="text-destructive hover:text-destructive">
+                  <Trash2 className="size-4 mr-2" /> Remove
+                </Button>
+              )}
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">Square image, under 2MB. Shown on your dashboard and public catalog.</p>
+        </div>
         <div className="space-y-2">
           <Label>Business name</Label>
           <Input value={businessName} onChange={(e) => setBusinessName(e.target.value)} />

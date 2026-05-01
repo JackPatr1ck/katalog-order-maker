@@ -123,6 +123,7 @@ function DashboardLayout() {
   const navItems = [
     { to: "/dashboard", label: "Overview", icon: LayoutGrid, exact: true },
     { to: "/dashboard/catalog", label: "Products", icon: Package },
+    { to: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
     { to: `/s/${profile.slug}`, label: "Catalog Link", icon: Globe, external: true },
     { to: "/dashboard/settings", label: "Profile", icon: User },
   ];

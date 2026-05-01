@@ -18,6 +18,7 @@ import { Route as SSlugRouteImport } from './routes/s.$slug'
 import { Route as OOrderIdRouteImport } from './routes/o.$orderId'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardCatalogRouteImport } from './routes/dashboard.catalog'
+import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
@@ -64,12 +65,18 @@ const DashboardCatalogRoute = DashboardCatalogRouteImport.update({
   path: '/catalog',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => DashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/onboarding': typeof OnboardingRoute
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/catalog': typeof DashboardCatalogRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/o/$orderId': typeof OOrderIdRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/onboarding': typeof OnboardingRoute
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/catalog': typeof DashboardCatalogRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/o/$orderId': typeof OOrderIdRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/onboarding': typeof OnboardingRoute
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/catalog': typeof DashboardCatalogRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/o/$orderId': typeof OOrderIdRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/onboarding'
+    | '/dashboard/analytics'
     | '/dashboard/catalog'
     | '/dashboard/settings'
     | '/o/$orderId'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/onboarding'
+    | '/dashboard/analytics'
     | '/dashboard/catalog'
     | '/dashboard/settings'
     | '/o/$orderId'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/onboarding'
+    | '/dashboard/analytics'
     | '/dashboard/catalog'
     | '/dashboard/settings'
     | '/o/$orderId'
@@ -207,16 +219,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardCatalogRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/analytics': {
+      id: '/dashboard/analytics'
+      path: '/analytics'
+      fullPath: '/dashboard/analytics'
+      preLoaderRoute: typeof DashboardAnalyticsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
 
 interface DashboardRouteChildren {
+  DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
   DashboardCatalogRoute: typeof DashboardCatalogRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAnalyticsRoute: DashboardAnalyticsRoute,
   DashboardCatalogRoute: DashboardCatalogRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardIndexRoute: DashboardIndexRoute,

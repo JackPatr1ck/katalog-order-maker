@@ -44,18 +44,68 @@ function Storefront() {
   const cartKey = `katalog_cart_${slug}`;
 
   useEffect(() => {
-    (async () => {
-      const { data: v } = await supabase.from("vendor_profiles").select("*").eq("slug", slug).maybeSingle();
-      if (!v) { setNotFound(true); setLoading(false); return; }
-      setVendor(v as Vendor);
+    let cancelled = false;
+    let vendorChannel: ReturnType<typeof supabase.channel> | null = null;
+    let dataChannels: ReturnType<typeof supabase.channel>[] = [];
+
+    async function loadShopData(vendorUserId: string) {
       const [{ data: cats }, { data: prods }] = await Promise.all([
-        supabase.from("categories").select("*").eq("vendor_id", v.user_id).order("position"),
-        supabase.from("products").select("*").eq("vendor_id", v.user_id).eq("is_active", true).order("created_at", { ascending: false }),
+        supabase.from("categories").select("*").eq("vendor_id", vendorUserId).order("position"),
+        supabase.from("products").select("*").eq("vendor_id", vendorUserId).eq("is_active", true).order("created_at", { ascending: false }),
       ]);
+      if (cancelled) return;
       setCategories((cats ?? []) as Category[]);
       setProducts((prods ?? []) as Product[]);
+    }
+
+    async function refetchVendor() {
+      const { data: v } = await supabase.from("vendor_profiles").select("*").eq("slug", slug).maybeSingle();
+      if (cancelled) return;
+      if (!v) { setVendor(null); setNotFound(true); return; }
+      setNotFound(false);
+      setVendor(v as Vendor);
+      return v as Vendor;
+    }
+
+    (async () => {
+      setLoading(true);
+      setNotFound(false);
+      const { data: v } = await supabase.from("vendor_profiles").select("*").eq("slug", slug).maybeSingle();
+      if (cancelled) return;
+      if (!v) { setNotFound(true); setLoading(false); return; }
+      setVendor(v as Vendor);
+      await loadShopData(v.user_id);
       setLoading(false);
+
+      // Realtime: listen for vendor profile changes (any slug update, logo, name, etc.)
+      vendorChannel = supabase
+        .channel(`vendor-profile-${slug}`)
+        .on("postgres_changes", { event: "*", schema: "public", table: "vendor_profiles" }, async (payload) => {
+          const newRow = payload.new as Partial<Vendor> | undefined;
+          const oldRow = payload.old as Partial<Vendor> | undefined;
+          if (newRow?.slug === slug || oldRow?.slug === slug) {
+            await refetchVendor();
+          }
+        })
+        .subscribe();
+
+      // Realtime: listen for products & categories changes for this vendor
+      const filter = `vendor_id=eq.${v.user_id}`;
+      dataChannels = [
+        supabase.channel(`products-${v.user_id}`)
+          .on("postgres_changes", { event: "*", schema: "public", table: "products", filter }, () => loadShopData(v.user_id))
+          .subscribe(),
+        supabase.channel(`categories-${v.user_id}`)
+          .on("postgres_changes", { event: "*", schema: "public", table: "categories", filter }, () => loadShopData(v.user_id))
+          .subscribe(),
+      ];
     })();
+
+    return () => {
+      cancelled = true;
+      if (vendorChannel) supabase.removeChannel(vendorChannel);
+      dataChannels.forEach(ch => supabase.removeChannel(ch));
+    };
   }, [slug]);
 
   // Load cart from localStorage

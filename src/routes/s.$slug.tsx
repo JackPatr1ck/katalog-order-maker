@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Loader2, Minus, Plus, ShoppingCart, MessageCircle, ImageOff, ShoppingBag } from "lucide-react";
 import { formatMoney, waLink } from "@/lib/format";
+import { trackEvent } from "@/lib/analytics";
 import { toast } from "sonner";
 import { z } from "zod";
 

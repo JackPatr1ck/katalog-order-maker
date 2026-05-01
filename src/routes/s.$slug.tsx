@@ -77,6 +77,8 @@ function Storefront() {
       setVendor(v as Vendor);
       await loadShopData(v.user_id);
       setLoading(false);
+      // Track storefront page view (best-effort, deduped per tab)
+      void trackEvent({ vendorId: v.user_id, type: "page_view" });
 
       // Realtime: listen for vendor profile changes (any slug update, logo, name, etc.)
       vendorChannel = supabase

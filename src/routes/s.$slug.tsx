@@ -332,6 +332,7 @@ function CartView({ cart, vendor, total, onQty, onClose, onSuccess }: {
         `View: ${window.location.origin}/o/${order.id}`,
       ];
       const link = waLink(vendor.whatsapp_number, lines.join("\n"));
+      void trackEvent({ vendorId: vendor.user_id, type: "checkout_click" });
       window.open(link, "_blank");
       toast.success("Order placed! Sending to WhatsApp...");
       onClose();

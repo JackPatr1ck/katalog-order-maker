@@ -140,6 +140,7 @@ function Storefront() {
 
   function addToCart(p: Product) {
     if (p.stock === 0) return;
+    if (vendor) void trackEvent({ vendorId: vendor.user_id, type: "product_click", productId: p.id });
     setCart(prev => {
       const existing = prev.find(c => c.product_id === p.id);
       if (existing) {

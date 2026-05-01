@@ -60,6 +60,7 @@ export const Route = createFileRoute("/dashboard")({
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Overview",
   "/dashboard/catalog": "Products",
+  "/dashboard/analytics": "Analytics",
   "/dashboard/settings": "Profile",
 };
 

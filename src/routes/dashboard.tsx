@@ -14,6 +14,7 @@ import {
   Copy,
   Receipt,
   Download,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -59,6 +60,7 @@ export const Route = createFileRoute("/dashboard")({
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Overview",
   "/dashboard/catalog": "Products",
+  "/dashboard/analytics": "Analytics",
   "/dashboard/settings": "Profile",
 };
 
@@ -121,6 +123,7 @@ function DashboardLayout() {
   const navItems = [
     { to: "/dashboard", label: "Overview", icon: LayoutGrid, exact: true },
     { to: "/dashboard/catalog", label: "Products", icon: Package },
+    { to: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
     { to: `/s/${profile.slug}`, label: "Catalog Link", icon: Globe, external: true },
     { to: "/dashboard/settings", label: "Profile", icon: User },
   ];

@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Loader2, Minus, Plus, ShoppingCart, MessageCircle, ImageOff, ShoppingBag } from "lucide-react";
 import { formatMoney, waLink } from "@/lib/format";
+import { trackEvent } from "@/lib/analytics";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -76,6 +77,8 @@ function Storefront() {
       setVendor(v as Vendor);
       await loadShopData(v.user_id);
       setLoading(false);
+      // Track storefront page view (best-effort, deduped per tab)
+      void trackEvent({ vendorId: v.user_id, type: "page_view" });
 
       // Realtime: listen for vendor profile changes (any slug update, logo, name, etc.)
       vendorChannel = supabase
@@ -137,6 +140,7 @@ function Storefront() {
 
   function addToCart(p: Product) {
     if (p.stock === 0) return;
+    if (vendor) void trackEvent({ vendorId: vendor.user_id, type: "product_click", productId: p.id });
     setCart(prev => {
       const existing = prev.find(c => c.product_id === p.id);
       if (existing) {
@@ -328,6 +332,7 @@ function CartView({ cart, vendor, total, onQty, onClose, onSuccess }: {
         `View: ${window.location.origin}/o/${order.id}`,
       ];
       const link = waLink(vendor.whatsapp_number, lines.join("\n"));
+      void trackEvent({ vendorId: vendor.user_id, type: "checkout_click" });
       window.open(link, "_blank");
       toast.success("Order placed! Sending to WhatsApp...");
       onClose();

@@ -195,6 +195,39 @@ export type Database = {
           },
         ]
       }
+      storefront_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          path: string | null
+          product_id: string | null
+          session_hash: string | null
+          source: string
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          path?: string | null
+          product_id?: string | null
+          session_hash?: string | null
+          source?: string
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          path?: string | null
+          product_id?: string | null
+          session_hash?: string | null
+          source?: string
+          vendor_id?: string
+        }
+        Relationships: []
+      }
       vendor_profiles: {
         Row: {
           business_name: string

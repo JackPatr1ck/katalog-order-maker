@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MessageCircle, Package, ShoppingBag, Zap } from "lucide-react";
+import { ArrowRight, MessageCircle, Package, Zap } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -19,9 +20,7 @@ function Landing() {
       <header className="sticky top-0 z-50 backdrop-blur-md bg-background/80 border-b border-border">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <div className="size-8 rounded-lg bg-hero shadow-elegant flex items-center justify-center">
-              <ShoppingBag className="size-4 text-primary-foreground" strokeWidth={2.5} />
-            </div>
+            <img src={logo} alt="Katalog" className="size-8 object-contain" />
             <span className="font-display font-bold text-xl">katalog</span>
           </Link>
           <div className="flex items-center gap-2">

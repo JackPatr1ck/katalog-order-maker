@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { ShoppingBag, Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import authIllustration from "@/assets/auth-illustration.jpg";
+import logo from "@/assets/logo.png";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional().default("signin"),
@@ -174,8 +175,8 @@ function AuthPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-card/40" />
           <Link to="/" className="absolute top-4 left-4 flex items-center gap-2">
-            <div className="size-8 rounded-lg bg-card/95 backdrop-blur shadow-elegant flex items-center justify-center">
-              <ShoppingBag className="size-4 text-primary" strokeWidth={2.5} />
+            <div className="size-8 rounded-lg bg-card/95 backdrop-blur shadow-elegant flex items-center justify-center p-1">
+              <img src={logo} alt="Katalog" className="size-full object-contain" />
             </div>
             <span className="font-display font-bold text-lg text-card drop-shadow-md">katalog</span>
           </Link>
@@ -190,9 +191,7 @@ function AuthPage() {
         <div className="mx-auto max-w-7xl bg-card rounded-3xl shadow-card overflow-hidden grid lg:grid-cols-2 min-h-[calc(100vh-3rem)]">
           <div className="flex flex-col px-16 py-12">
             <Link to="/" className="flex items-center gap-2 mb-16">
-              <div className="size-8 rounded-lg bg-hero shadow-elegant flex items-center justify-center">
-                <ShoppingBag className="size-4 text-primary-foreground" strokeWidth={2.5} />
-              </div>
+              <img src={logo} alt="Katalog" className="size-8 object-contain" />
               <span className="font-display font-bold text-xl">katalog</span>
             </Link>
             <div className="flex-1 flex flex-col justify-center max-w-md w-full">

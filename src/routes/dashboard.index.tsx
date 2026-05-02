@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Copy, Package2, Plus, ArrowRight } from "lucide-react";
 import { formatMoney } from "@/lib/format";
 import { toast } from "sonner";
+import logo from "@/assets/logo.png";
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardHome,
@@ -73,13 +74,22 @@ function DashboardHome() {
     <div className="space-y-12">
       {/* Greeting */}
       <section>
-        <p className="text-xs font-semibold tracking-[0.18em] uppercase text-muted-foreground mb-3">
-          Dashboard
-        </p>
-        <h1 className="font-display text-3xl lg:text-4xl font-semibold text-primary tracking-tight">
-          Welcome, {businessName}
-        </h1>
-        <p className="text-muted-foreground text-base mt-2 max-w-xl">
+        <div className="flex items-center gap-4">
+          <img
+            src={logo}
+            alt="Katalog"
+            className="size-12 lg:size-14 object-contain shrink-0"
+          />
+          <div className="min-w-0">
+            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-muted-foreground mb-2">
+              Dashboard
+            </p>
+            <h1 className="font-display text-3xl lg:text-4xl font-semibold text-primary tracking-tight">
+              Welcome, {businessName}
+            </h1>
+          </div>
+        </div>
+        <p className="text-muted-foreground text-base mt-3 max-w-xl">
           Curate your offerings with precision.
         </p>
       </section>

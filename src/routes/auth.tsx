@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-import authIllustration from "@/assets/auth-illustration.jpg";
+import authIllustration from "@/assets/auth-illustration.webp";
 import logo from "@/assets/logo.png";
 
 const searchSchema = z.object({
@@ -170,10 +170,10 @@ function AuthPage() {
         <div className="relative h-56 sm:h-64 bg-hero overflow-hidden flex-shrink-0">
           <img
             src={authIllustration}
-            alt="Vendor managing online shop on WhatsApp"
-            className="absolute inset-0 size-full object-cover"
+            alt="Vendors celebrating a successful sale"
+            className="absolute inset-0 size-full object-contain p-6"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-card/40" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-card/40 pointer-events-none" />
           <Link to="/" className="absolute top-4 left-4 flex items-center gap-2">
             <div className="size-8 rounded-lg bg-card/95 backdrop-blur shadow-elegant flex items-center justify-center p-1">
               <img src={logo} alt="Katalog" className="size-full object-contain" />
@@ -201,10 +201,8 @@ function AuthPage() {
           <div className="relative bg-hero overflow-hidden">
             <img
               src={authIllustration}
-              alt="Vendor managing online shop on WhatsApp"
-              width={1024}
-              height={1280}
-              className="absolute inset-0 size-full object-cover"
+              alt="Vendors celebrating a successful sale"
+              className="absolute inset-0 size-full object-contain p-12"
             />
           </div>
         </div>

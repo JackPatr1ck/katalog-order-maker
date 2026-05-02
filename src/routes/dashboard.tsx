@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatMoney } from "@/lib/format";
 import { toast } from "sonner";
+import platformLogo from "@/assets/logo.png";
 
 export interface VendorProfile {
   user_id: string;

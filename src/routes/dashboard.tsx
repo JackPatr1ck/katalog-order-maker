@@ -369,9 +369,12 @@ function DashboardLayout() {
             </SheetContent>
           </Sheet>
 
-          <h1 className="font-display font-semibold text-base flex-1 text-center truncate">
-            {title}
-          </h1>
+          <div className="flex-1 flex items-center justify-center gap-2 min-w-0">
+            <img src={platformLogo} alt="" className="size-6 object-contain shrink-0" />
+            <h1 className="font-display font-semibold text-base truncate">
+              {title}
+            </h1>
+          </div>
 
           <Button
             variant="ghost"

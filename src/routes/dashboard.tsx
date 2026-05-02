@@ -331,25 +331,19 @@ function DashboardLayout() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-72 p-0 flex flex-col">
-              <div className="px-6 py-6 border-b border-border flex items-center gap-3">
-                {profile.logo_url ? (
-                  <img
-                    src={profile.logo_url}
-                    alt={profile.business_name}
-                    className="size-10 rounded-full object-cover border border-border shrink-0"
-                  />
-                ) : (
-                  <div className="size-10 rounded-full bg-accent flex items-center justify-center shrink-0">
-                    <span className="font-display font-semibold text-primary text-sm">
-                      {profile.business_name.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                )}
+              <div className="px-5 py-5 border-b border-border flex items-center gap-3">
+                <img
+                  src={platformLogo}
+                  alt="Katalog"
+                  className="size-9 object-contain shrink-0"
+                />
                 <div className="min-w-0">
-                  <h1 className="font-display text-base font-semibold text-primary leading-tight truncate">
+                  <h1 className="font-display text-[15px] font-semibold text-primary leading-tight truncate">
                     {profile.business_name}
                   </h1>
-                  <p className="text-[11px] text-muted-foreground">Katalog workspace</p>
+                  <p className="text-[11px] text-muted-foreground truncate">
+                    Katalog workspace
+                  </p>
                 </div>
               </div>
               <div className="flex-1 px-4 py-5 overflow-y-auto space-y-6">

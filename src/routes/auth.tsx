@@ -198,7 +198,7 @@ function AuthPage() {
               {formInner}
             </div>
           </div>
-          <div className="relative bg-hero overflow-hidden">
+          <div className="relative bg-card overflow-hidden">
             <img
               src={authIllustration}
               alt="Vendors celebrating a successful sale"

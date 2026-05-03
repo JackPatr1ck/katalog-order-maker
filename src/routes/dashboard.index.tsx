@@ -74,21 +74,22 @@ function DashboardHome() {
     <div className="space-y-12">
       {/* Greeting */}
       <section>
-        <div className="flex items-center gap-3 sm:gap-4 lg:gap-5">
+        <div className="flex items-center gap-2.5 mb-6 sm:mb-8">
           <img
             src={logo}
             alt="Katalog"
-            className="size-14 sm:size-16 lg:size-20 object-contain shrink-0"
+            className="size-8 sm:size-9 object-contain shrink-0"
           />
-          <div className="min-w-0">
-            <p className="text-[10px] sm:text-xs font-semibold tracking-[0.18em] uppercase text-muted-foreground mb-1 sm:mb-2">
-              Dashboard
-            </p>
-            <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-semibold text-primary tracking-tight leading-tight truncate">
-              Welcome, {businessName}
-            </h1>
-          </div>
+          <span className="font-display text-lg sm:text-xl font-semibold text-primary tracking-tight">
+            Katalog
+          </span>
         </div>
+        <p className="text-[10px] sm:text-xs font-semibold tracking-[0.18em] uppercase text-muted-foreground mb-1 sm:mb-2">
+          Dashboard
+        </p>
+        <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-semibold text-primary tracking-tight leading-tight">
+          Welcome, {businessName}
+        </h1>
         <p className="text-muted-foreground text-sm sm:text-base mt-3 sm:mt-4 max-w-xl">
           Curate your offerings with precision.
         </p>

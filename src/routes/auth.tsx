@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-import authIllustration from "@/assets/auth-illustration.webp";
+import authIllustration from "@/assets/auth-illustration.png";
 import logo from "@/assets/logo.png";
 
 const searchSchema = z.object({

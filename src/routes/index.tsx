@@ -121,7 +121,7 @@ function Landing() {
               <p className="font-display font-semibold text-sm mb-3">One link, anywhere</p>
               <div className="flex gap-2">
                 {/* WhatsApp */}
-                <div className="flex-1 aspect-square rounded-xl bg-accent flex items-center justify-center">
+                <button type="button" aria-label="Share on WhatsApp" className="flex-1 aspect-square rounded-xl bg-accent flex items-center justify-center transition-all duration-200 hover:scale-110 hover:shadow-elegant hover:bg-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-95">
                   <svg viewBox="0 0 32 32" className="w-3/4 h-3/4" aria-label="WhatsApp">
                     <path fill="#25D366" d="M16 3C8.8 3 3 8.8 3 16c0 2.3.6 4.4 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3z"/>
                     <path fill="#fff" d="M22.5 19.4c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-2-1.8-2.3-.2-.3 0-.5.1-.6.1-.1.3-.4.5-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.7.4-.2.3-.9.9-.9 2.2 0 1.3 1 2.6 1.1 2.7.1.2 1.9 3 4.7 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3z"/>

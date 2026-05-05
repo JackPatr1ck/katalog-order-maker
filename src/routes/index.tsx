@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Check, MessageCircle, ShoppingBag, Clock, Image as ImageIcon } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Check, MessageCircle, ShoppingBag, Clock, Image as ImageIcon, Store, Users, BarChart3, Truck, BookOpen, PlayCircle, FileText, Sparkles, Zap, Shield } from "lucide-react";
 import logo from "@/assets/logo.png";
+import storefrontPreview from "@/assets/preview-storefront.jpg";
+import analyticsPreview from "@/assets/preview-analytics.jpg";
 
 export const Route = createFileRoute("/")({
   component: Landing,

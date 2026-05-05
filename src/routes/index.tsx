@@ -199,6 +199,228 @@ function Landing() {
           </div>
         </section>
 
+        {/* Solutions */}
+        <section id="solutions" className="px-6 sm:px-10 py-20 border-t border-border bg-muted/30">
+          <div className="max-w-6xl mx-auto">
+            <div className="max-w-2xl mb-12">
+              <span className="text-xs uppercase tracking-widest text-primary font-semibold">Solutions</span>
+              <h2 className="font-display text-3xl sm:text-5xl font-bold mt-3 leading-tight">Built for the way you already sell</h2>
+              <p className="text-muted-foreground mt-4 text-base sm:text-lg">Whether you're a fashion vendor, a home baker, or a thrift store — Katalog adapts to your hustle.</p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {[
+                { icon: Store, title: "Fashion & Thrift", body: "Showcase fits, sizes and colours in a swipeable catalog." },
+                { icon: ShoppingBag, title: "Food & Bakery", body: "Take pre-orders with delivery slots, no missed messages." },
+                { icon: Users, title: "Beauty & Hair", body: "Bookings and product sales from one shareable link." },
+                { icon: Truck, title: "Wholesale & Resellers", body: "Bulk price tiers, MOQ rules, and order summaries." },
+              ].map((s) => (
+                <div key={s.title} className="p-6 rounded-2xl bg-card border border-border hover:shadow-elegant transition-shadow">
+                  <div className="size-11 rounded-xl bg-accent flex items-center justify-center mb-4">
+                    <s.icon className="size-5 text-primary" strokeWidth={2.2} />
+                  </div>
+                  <h3 className="font-display font-semibold text-lg mb-1.5">{s.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{s.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Public catalog preview */}
+        <section className="px-6 sm:px-10 py-20 border-t border-border">
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+            <div className="order-2 lg:order-1">
+              <span className="text-xs uppercase tracking-widest text-primary font-semibold">Public catalog</span>
+              <h2 className="font-display text-3xl sm:text-5xl font-bold mt-3 leading-tight">Your storefront, beautifully simple</h2>
+              <p className="text-muted-foreground mt-4 text-base sm:text-lg">A clean, mobile-first storefront your customers will love. Photos, prices, variants and a single tap to order on WhatsApp.</p>
+              <ul className="mt-6 space-y-3">
+                {["No sign-up required for buyers", "Shareable on Instagram bio, status & flyers", "Looks great on every device"].map((p) => (
+                  <li key={p} className="flex items-start gap-3 text-sm">
+                    <span className="mt-0.5 size-5 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
+                      <Check className="size-3 text-primary" strokeWidth={3} />
+                    </span>
+                    <span className="text-foreground/80">{p}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="order-1 lg:order-2">
+              <div className="relative rounded-3xl overflow-hidden bg-accent/40 border border-border shadow-elegant">
+                <img src={storefrontPreview} alt="Public catalog storefront preview on mobile" loading="lazy" width={1024} height={1024} className="w-full h-auto" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Analytics preview */}
+        <section className="px-6 sm:px-10 py-20 border-t border-border bg-muted/30">
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="relative rounded-3xl overflow-hidden bg-card border border-border shadow-elegant">
+                <img src={analyticsPreview} alt="Customer analytics dashboard preview" loading="lazy" width={1280} height={896} className="w-full h-auto" />
+              </div>
+            </div>
+            <div>
+              <span className="text-xs uppercase tracking-widest text-primary font-semibold">Customer analytics</span>
+              <h2 className="font-display text-3xl sm:text-5xl font-bold mt-3 leading-tight">Know what sells, who buys, and when</h2>
+              <p className="text-muted-foreground mt-4 text-base sm:text-lg">Track revenue, top products and repeat customers in one calm dashboard. No spreadsheets required.</p>
+              <div className="mt-6 grid grid-cols-3 gap-4">
+                {[
+                  { label: "Revenue", value: "+38%" },
+                  { label: "Repeat buyers", value: "62%" },
+                  { label: "Avg. response", value: "4 min" },
+                ].map((k) => (
+                  <div key={k.label} className="p-4 rounded-xl bg-card border border-border">
+                    <p className="font-display text-2xl font-bold">{k.value}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{k.label}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 flex items-center gap-2 text-xs text-muted-foreground">
+                <BarChart3 className="size-4 text-primary" />
+                <span>Real-time insights, updated as orders come in.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* How to setup */}
+        <section id="setup" className="px-6 sm:px-10 py-20 border-t border-border">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <span className="text-xs uppercase tracking-widest text-primary font-semibold">How to setup</span>
+              <h2 className="font-display text-3xl sm:text-5xl font-bold mt-3 leading-tight">Live in under 10 minutes</h2>
+              <p className="text-muted-foreground mt-4">Three small steps. No code, no card.</p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                { n: "01", icon: Sparkles, title: "Create your shop", body: "Sign up, add your business name and WhatsApp number." },
+                { n: "02", icon: ImageIcon, title: "Upload products", body: "Add photos, prices, variants and stock — drag and drop." },
+                { n: "03", icon: Zap, title: "Share your link", body: "Drop your katalog.link/yourshop in bio, status and flyers." },
+              ].map((s) => (
+                <div key={s.n} className="relative p-7 rounded-2xl bg-card border border-border">
+                  <span className="font-display text-5xl font-bold text-accent absolute top-4 right-5">{s.n}</span>
+                  <div className="size-11 rounded-xl bg-accent flex items-center justify-center mb-4">
+                    <s.icon className="size-5 text-primary" strokeWidth={2.2} />
+                  </div>
+                  <h3 className="font-display font-semibold text-lg mb-1.5">{s.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{s.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section id="pricing" className="px-6 sm:px-10 py-20 border-t border-border bg-muted/30">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <span className="text-xs uppercase tracking-widest text-primary font-semibold">Pricing</span>
+              <h2 className="font-display text-3xl sm:text-5xl font-bold mt-3 leading-tight">Simple, honest pricing</h2>
+              <p className="text-muted-foreground mt-4">Start free. Upgrade only when you outgrow it.</p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                { name: "Starter", price: "₦0", period: "free forever", features: ["Up to 20 products", "1 shareable link", "WhatsApp checkout", "Basic analytics"], cta: "Get started", featured: false },
+                { name: "Hustler", price: "₦4,500", period: "per month", features: ["Unlimited products", "Custom domain", "Advanced analytics", "Order CSV export", "Priority support"], cta: "Start 14-day trial", featured: true },
+                { name: "Business", price: "₦12,000", period: "per month", features: ["Multiple staff seats", "Bulk pricing tiers", "API access", "Dedicated success manager"], cta: "Contact sales", featured: false },
+              ].map((p) => (
+                <div key={p.name} className={`relative p-7 rounded-2xl border ${p.featured ? "bg-foreground text-background border-foreground shadow-elegant" : "bg-card border-border"}`}>
+                  {p.featured && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-widest font-semibold px-3 py-1 rounded-full bg-primary text-primary-foreground">Most popular</span>
+                  )}
+                  <h3 className="font-display text-xl font-semibold">{p.name}</h3>
+                  <div className="mt-3 flex items-baseline gap-2">
+                    <span className="font-display text-4xl font-bold">{p.price}</span>
+                    <span className={`text-sm ${p.featured ? "text-background/60" : "text-muted-foreground"}`}>{p.period}</span>
+                  </div>
+                  <ul className="mt-6 space-y-2.5">
+                    {p.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-sm">
+                        <Check className={`size-4 mt-0.5 flex-shrink-0 ${p.featured ? "text-primary-glow" : "text-primary"}`} strokeWidth={2.5} />
+                        <span className={p.featured ? "text-background/90" : "text-foreground/80"}>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link to="/auth" search={{ mode: "signup" as const }} className="block mt-7">
+                    <Button variant={p.featured ? "secondary" : "outline"} className="w-full rounded-full">{p.cta}</Button>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Resources */}
+        <section id="resources" className="px-6 sm:px-10 py-20 border-t border-border">
+          <div className="max-w-6xl mx-auto">
+            <div className="max-w-2xl mb-12">
+              <span className="text-xs uppercase tracking-widest text-primary font-semibold">Resources</span>
+              <h2 className="font-display text-3xl sm:text-5xl font-bold mt-3 leading-tight">Learn, grow, sell more</h2>
+            </div>
+            <div className="grid md:grid-cols-3 gap-5">
+              {[
+                { icon: BookOpen, tag: "Guide", title: "The vendor's playbook", body: "From first product to first 100 orders — a practical roadmap." },
+                { icon: PlayCircle, tag: "Video", title: "Setup in 5 minutes", body: "Watch a real vendor build their shop from scratch." },
+                { icon: FileText, tag: "Template", title: "Catalog photo cheatsheet", body: "Free templates for clean, consistent product photos." },
+              ].map((r) => (
+                <a key={r.title} href="#" className="group p-6 rounded-2xl bg-card border border-border hover:shadow-elegant transition-shadow block">
+                  <div className="size-11 rounded-xl bg-accent flex items-center justify-center mb-4">
+                    <r.icon className="size-5 text-primary" strokeWidth={2.2} />
+                  </div>
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">{r.tag}</span>
+                  <h3 className="font-display font-semibold text-lg mt-1 mb-1.5 group-hover:text-primary transition-colors">{r.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{r.body}</p>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section id="faq" className="px-6 sm:px-10 py-20 border-t border-border bg-muted/30">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-12">
+              <span className="text-xs uppercase tracking-widest text-primary font-semibold">FAQ</span>
+              <h2 className="font-display text-3xl sm:text-5xl font-bold mt-3 leading-tight">Questions, answered</h2>
+            </div>
+            <Accordion type="single" collapsible className="space-y-3">
+              {[
+                { q: "Do I need a website to use Katalog?", a: "Not at all. Katalog gives you a hosted storefront link you can share anywhere — Instagram bio, WhatsApp status, flyers, anywhere." },
+                { q: "How do customers pay?", a: "Orders are sent to your WhatsApp as a clean message with all the details. You confirm payment your way — bank transfer, POS, cash on delivery." },
+                { q: "Can I use my own domain?", a: "Yes. On the Hustler plan and above, connect your custom domain in a few clicks." },
+                { q: "Is there a transaction fee?", a: "No. We don't take a cut of your sales — the price you see is the price you pay." },
+                { q: "Can I export my data?", a: "Absolutely. Export orders, customers and products as CSV at any time." },
+                { q: "Do you offer support?", a: "Yes — chat support on every plan, with priority response on paid tiers." },
+              ].map((item, i) => (
+                <AccordionItem key={i} value={`item-${i}`} className="bg-card border border-border rounded-xl px-5">
+                  <AccordionTrigger className="font-display font-semibold text-left hover:no-underline">{item.q}</AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground leading-relaxed">{item.a}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="px-6 sm:px-10 py-20 border-t border-border">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent text-xs font-medium text-primary mb-6">
+              <Shield className="size-3.5" /> No card required
+            </div>
+            <h2 className="font-display text-3xl sm:text-5xl font-bold leading-tight">Your shop. Your link. Today.</h2>
+            <p className="text-muted-foreground mt-4 text-base sm:text-lg max-w-xl mx-auto">Join thousands of vendors turning DMs into structured orders.</p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+              <Link to="/auth" search={{ mode: "signup" as const }}>
+                <Button size="lg" className="rounded-full px-8 shadow-elegant w-full sm:w-auto">Create your shop</Button>
+              </Link>
+              <a href="#pricing">
+                <Button size="lg" variant="outline" className="rounded-full px-8 w-full sm:w-auto">See pricing</Button>
+              </a>
+            </div>
+          </div>
+        </section>
+
         <footer className="border-t border-border px-6 sm:px-10 py-8 text-sm text-muted-foreground flex flex-col sm:flex-row gap-2 sm:justify-between">
           <span>© {new Date().getFullYear()} Katalog</span>
           <span>Built for vendors who hustle.</span>

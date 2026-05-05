@@ -126,9 +126,9 @@ function Landing() {
                     <path fill="#25D366" d="M16 3C8.8 3 3 8.8 3 16c0 2.3.6 4.4 1.7 6.4L3 29l6.8-1.8c1.9 1 4 1.6 6.2 1.6 7.2 0 13-5.8 13-13S23.2 3 16 3z"/>
                     <path fill="#fff" d="M22.5 19.4c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-2-1.8-2.3-.2-.3 0-.5.1-.6.1-.1.3-.4.5-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5 0-.2-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.7.4-.2.3-.9.9-.9 2.2 0 1.3 1 2.6 1.1 2.7.1.2 1.9 3 4.7 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3z"/>
                   </svg>
-                </div>
+                </button>
                 {/* Instagram */}
-                <div className="flex-1 aspect-square rounded-xl bg-accent flex items-center justify-center">
+                <button type="button" aria-label="Share on Instagram" className="flex-1 aspect-square rounded-xl bg-accent flex items-center justify-center transition-all duration-200 hover:scale-110 hover:shadow-elegant hover:bg-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-95">
                   <svg viewBox="0 0 32 32" className="w-3/4 h-3/4" aria-label="Instagram">
                     <defs>
                       <linearGradient id="igGrad" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -142,14 +142,14 @@ function Landing() {
                     <circle cx="16" cy="16" r="5.5" fill="none" stroke="#fff" strokeWidth="2"/>
                     <circle cx="23" cy="9" r="1.5" fill="#fff"/>
                   </svg>
-                </div>
+                </button>
                 {/* Facebook */}
-                <div className="flex-1 aspect-square rounded-xl bg-accent flex items-center justify-center">
+                <button type="button" aria-label="Share on Facebook" className="flex-1 aspect-square rounded-xl bg-accent flex items-center justify-center transition-all duration-200 hover:scale-110 hover:shadow-elegant hover:bg-accent/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card active:scale-95">
                   <svg viewBox="0 0 32 32" className="w-3/4 h-3/4" aria-label="Facebook">
                     <path fill="#1877F2" d="M29 16c0-7.2-5.8-13-13-13S3 8.8 3 16c0 6.5 4.8 11.9 11 12.8V19.8h-3.3V16H14v-2.9c0-3.3 2-5.1 5-5.1 1.4 0 2.9.3 2.9.3v3.2h-1.6c-1.6 0-2.1 1-2.1 2v2.5h3.6l-.6 3.8H18v9c6.2-.9 11-6.3 11-12.8z"/>
                     <path fill="#fff" d="M21.2 19.8l.6-3.8H18v-2.5c0-1 .5-2 2.1-2h1.6V8.3s-1.5-.3-2.9-.3c-3 0-5 1.8-5 5.1V16h-3.3v3.8H14v9c.7.1 1.3.2 2 .2s1.3-.1 2-.2v-9h3.2z"/>
                   </svg>
-                </div>
+                </button>
               </div>
             </div>
           </div>

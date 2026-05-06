@@ -11,6 +11,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Loader2, Minus, Plus, ShoppingCart, MessageCircle, ImageOff, ShoppingBag } from "lucide-react";
 import { formatMoney, waLink } from "@/lib/format";
 import { trackEvent } from "@/lib/analytics";
+import { generateTicketBlob, uploadTicket } from "@/lib/ticket";
 import { toast } from "sonner";
 import { z } from "zod";
 

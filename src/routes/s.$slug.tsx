@@ -316,20 +316,29 @@ function CartView({ cart, vendor, total, onQty, onClose, onSuccess }: {
       const { error: itemsErr } = await supabase.from("order_items").insert(items);
       if (itemsErr) throw itemsErr;
 
-      // Build WhatsApp message and open wa.me
+      // Generate ticket image, upload, then build WhatsApp message
+      let ticketUrl = "";
+      try {
+        const blob = await generateTicketBlob({
+          orderNumber: order.order_number,
+          businessName: vendor.business_name,
+          customerName: parsed.data.customer_name,
+          customerPhone: parsed.data.customer_phone,
+          address: parsed.data.delivery_address,
+          note: parsed.data.note ?? null,
+          items: cart.map(c => ({ name: c.name, quantity: c.quantity, price_cents: c.price_cents })),
+          totalCents: total,
+          currency: vendor.currency,
+        });
+        ticketUrl = await uploadTicket(order.id, blob);
+      } catch (err) {
+        console.error("Ticket generation failed", err);
+      }
+
       const lines = [
-        `🛍️ *New Katalog order #${order.order_number}*`,
-        `*Customer:* ${parsed.data.customer_name}`,
-        `*Phone:* ${parsed.data.customer_phone}`,
-        `*Address:* ${parsed.data.delivery_address}`,
-        ``,
-        `*Items:*`,
-        ...cart.map(c => `• ${c.quantity}× ${c.name} — ${formatMoney(c.price_cents * c.quantity, vendor.currency)}`),
-        ``,
-        `*Total: ${formatMoney(total, vendor.currency)}*`,
-        ...(parsed.data.note ? [``, `*Note:* ${parsed.data.note}`] : []),
-        ``,
-        `View: ${window.location.origin}/o/${order.id}`,
+        `New Katalog order #${order.order_number}`,
+        `From ${parsed.data.customer_name}`,
+        ticketUrl ? `Ticket: ${ticketUrl}` : `View order: ${window.location.origin}/o/${order.id}`,
       ];
       const link = waLink(vendor.whatsapp_number, lines.join("\n"));
       void trackEvent({ vendorId: vendor.user_id, type: "checkout_click" });

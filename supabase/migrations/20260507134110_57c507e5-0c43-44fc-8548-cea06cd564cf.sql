@@ -1,0 +1,2 @@
+CREATE POLICY "Public can read order tickets" ON storage.objects FOR SELECT TO anon, authenticated USING (bucket_id = 'order-tickets');
+CREATE POLICY "Anyone can update order tickets" ON storage.objects FOR UPDATE TO anon, authenticated USING (bucket_id = 'order-tickets') WITH CHECK (bucket_id = 'order-tickets');

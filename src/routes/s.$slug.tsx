@@ -334,6 +334,7 @@ function CartView({ cart, vendor, total, onQty, onClose, onSuccess }: {
         ticketUrl = await uploadTicket(order.id, blob);
       } catch (err) {
         console.error("Ticket generation failed", err);
+        toast.error(`Ticket image failed: ${err instanceof Error ? err.message : "unknown error"}`);
       }
 
       const lines = [

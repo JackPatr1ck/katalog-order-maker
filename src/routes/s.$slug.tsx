@@ -337,10 +337,23 @@ function CartView({ cart, vendor, total, onQty, onClose, onSuccess }: {
         toast.error(`Ticket image failed: ${err instanceof Error ? err.message : "unknown error"}`);
       }
 
+      const itemLines = cart.map(c => `• ${c.quantity} × ${c.name}`).join("\n");
       const lines = [
-        `New Katalog order #${order.order_number}`,
-        `From ${parsed.data.customer_name}`,
-        ticketUrl ? `Ticket: ${ticketUrl}` : `View order: ${window.location.origin}/o/${order.id}`,
+        `Hello ${vendor.business_name},`,
+        ``,
+        `I'd like to place a new order (#${order.order_number}).`,
+        ``,
+        `Name: ${parsed.data.customer_name}`,
+        `Phone: ${parsed.data.customer_phone}`,
+        `Address: ${parsed.data.delivery_address}`,
+        ``,
+        `Items:`,
+        itemLines,
+        ``,
+        `Total: ${formatMoney(total, vendor.currency)}`,
+        ...(parsed.data.note ? [``, `Note: ${parsed.data.note}`] : []),
+        ``,
+        ticketUrl ? `Order ticket: ${ticketUrl}` : `View order: ${window.location.origin}/o/${order.id}`,
       ];
       const link = waLink(vendor.whatsapp_number, lines.join("\n"));
       void trackEvent({ vendorId: vendor.user_id, type: "checkout_click" });

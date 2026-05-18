@@ -14,6 +14,7 @@ import { trackEvent } from "@/lib/analytics";
 import { generateTicketBlob, uploadTicket } from "@/lib/ticket";
 import { toast } from "sonner";
 import { z } from "zod";
+import { ProductDetailDialog } from "@/components/product-detail-dialog";
 
 export const Route = createFileRoute("/s/$slug")({
   component: Storefront,

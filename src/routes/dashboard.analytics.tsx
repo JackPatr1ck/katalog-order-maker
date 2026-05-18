@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Eye, MousePointerClick, MessageCircle, TrendingUp, Info, Copy } from "lucide-react";
+import { Loader2, Eye, MousePointerClick, MessageCircle, TrendingUp, Info, Copy, Star } from "lucide-react";
 import { SOURCE_LABELS, type TrafficSource } from "@/lib/analytics";
 import { toast } from "sonner";
 

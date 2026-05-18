@@ -24,6 +24,7 @@ interface EventRow {
 }
 
 interface ProductLite { id: string; name: string; }
+interface ReviewRow { id: string; product_id: string; customer_name: string; rating: number; comment: string | null; created_at: string; }
 
 type Range = "7d" | "all";
 

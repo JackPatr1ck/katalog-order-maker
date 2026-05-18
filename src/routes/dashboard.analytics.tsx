@@ -280,6 +280,46 @@ function AnalyticsPage() {
             )}
           </Card>
 
+          {/* Customer reviews */}
+          <Card className="p-5 shadow-card">
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div>
+                <h2 className="font-display font-semibold text-base">Customer reviews</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {reviews.length === 0
+                    ? "No reviews yet."
+                    : `${reviews.length} review${reviews.length > 1 ? "s" : ""} · avg ${(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)}★`}
+                </p>
+              </div>
+            </div>
+            {reviews.length === 0 ? (
+              <p className="text-sm text-muted-foreground">When customers leave reviews on your products, they'll show up here.</p>
+            ) : (
+              <ul className="space-y-3 max-h-96 overflow-y-auto pr-1">
+                {reviews.map(r => {
+                  const productName = products.find(p => p.id === r.product_id)?.name ?? "Deleted product";
+                  return (
+                    <li key={r.id} className="rounded-lg border border-border p-3">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="font-medium text-sm truncate">{r.customer_name}</span>
+                          <Badge variant="secondary" className="text-[10px] truncate max-w-[12rem]">{productName}</Badge>
+                        </div>
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map(n => (
+                            <Star key={n} className={`size-3.5 ${n <= r.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
+                          ))}
+                        </div>
+                      </div>
+                      {r.comment && <p className="text-sm text-muted-foreground mt-1.5 whitespace-pre-wrap">{r.comment}</p>}
+                      <p className="text-[10px] text-muted-foreground mt-1.5">{new Date(r.created_at).toLocaleDateString()}</p>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Card>
+
           {/* Trackable links */}
           {slug && (
             <Card className="p-5 shadow-card">

@@ -173,7 +173,7 @@ function Landing() {
             <div className="mt-8 flex justify-center">
               <Link to="/auth" search={{ mode: "signup" as const }}>
                 <Button size="lg" className="rounded-full px-8 shadow-elegant">
-                  Get free demo
+                  Join waitlist
                 </Button>
               </Link>
             </div>

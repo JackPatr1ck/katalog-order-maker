@@ -273,6 +273,15 @@ function Storefront() {
         </div>
       )}
 
+      <ProductDetailDialog
+        open={activeProduct !== null}
+        onOpenChange={(o) => { if (!o) setActiveProduct(null); }}
+        product={activeProduct}
+        vendorId={vendor.user_id}
+        currency={vendor.currency}
+        onAddToCart={(p) => { addToCart(p as Product); setActiveProduct(null); }}
+      />
+
       <footer className="text-center pt-8 text-xs text-muted-foreground">
         Powered by <Link to="/" className="font-medium text-foreground hover:underline">katalog</Link>
       </footer>

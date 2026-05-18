@@ -58,14 +58,23 @@ function AnalyticsPage() {
         .order("created_at", { ascending: false })
         .limit(5000);
       if (since) q = q.gte("created_at", since);
-      const [{ data: evs }, { data: prods }, { data: profile }] = await Promise.all([
+      let rq = supabase
+        .from("product_reviews")
+        .select("id,product_id,customer_name,rating,comment,created_at")
+        .eq("vendor_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(500);
+      if (since) rq = rq.gte("created_at", since);
+      const [{ data: evs }, { data: prods }, { data: profile }, { data: revs }] = await Promise.all([
         q,
         supabase.from("products").select("id,name").eq("vendor_id", user.id),
         supabase.from("vendor_profiles").select("slug").eq("user_id", user.id).maybeSingle(),
+        rq,
       ]);
       if (cancelled) return;
       setEvents((evs ?? []) as EventRow[]);
       setProducts((prods ?? []) as ProductLite[]);
+      setReviews((revs ?? []) as ReviewRow[]);
       setSlug(profile?.slug ?? "");
       setLoading(false);
     })();

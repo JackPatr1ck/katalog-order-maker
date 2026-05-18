@@ -43,6 +43,7 @@ function Storefront() {
   const [notFound, setNotFound] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [activeProduct, setActiveProduct] = useState<Product | null>(null);
 
   const cartKey = `katalog_cart_${slug}`;
 

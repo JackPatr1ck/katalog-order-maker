@@ -14,6 +14,7 @@ import { trackEvent } from "@/lib/analytics";
 import { generateTicketBlob, uploadTicket } from "@/lib/ticket";
 import { toast } from "sonner";
 import { z } from "zod";
+import { ProductDetailDialog } from "@/components/product-detail-dialog";
 
 export const Route = createFileRoute("/s/$slug")({
   component: Storefront,
@@ -42,6 +43,7 @@ function Storefront() {
   const [notFound, setNotFound] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [activeProduct, setActiveProduct] = useState<Product | null>(null);
 
   const cartKey = `katalog_cart_${slug}`;
 
@@ -234,7 +236,11 @@ function Storefront() {
                 <h2 className="font-display text-2xl font-bold mb-4">{cat.name}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {items.map(p => (
-                    <Card key={p.id} className={`overflow-hidden shadow-card ${p.stock === 0 ? "opacity-60" : "hover:shadow-elegant"} transition-shadow`}>
+                    <Card
+                      key={p.id}
+                      onClick={() => setActiveProduct(p)}
+                      className={`overflow-hidden shadow-card cursor-pointer ${p.stock === 0 ? "opacity-60" : "hover:shadow-elegant"} transition-shadow`}
+                    >
                       <div className="aspect-square bg-muted relative">
                         {p.image_url ? <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><ImageOff className="size-8 text-muted-foreground" /></div>}
                         {p.stock === 0 && <div className="absolute inset-0 bg-background/60 flex items-center justify-center"><Badge variant="destructive">Sold out</Badge></div>}
@@ -244,7 +250,7 @@ function Storefront() {
                         {p.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{p.description}</p>}
                         <div className="mt-2 flex items-center justify-between gap-2">
                           <span className="font-semibold text-sm">{formatMoney(p.price_cents, vendor.currency)}</span>
-                          <Button size="sm" variant="outline" disabled={p.stock === 0} onClick={() => addToCart(p)} className="h-8 px-2.5">
+                          <Button size="sm" variant="outline" disabled={p.stock === 0} onClick={(e) => { e.stopPropagation(); addToCart(p); }} className="h-8 px-2.5">
                             <Plus className="size-3.5" />
                           </Button>
                         </div>
@@ -266,6 +272,15 @@ function Storefront() {
           </Button>
         </div>
       )}
+
+      <ProductDetailDialog
+        open={activeProduct !== null}
+        onOpenChange={(o) => { if (!o) setActiveProduct(null); }}
+        product={activeProduct}
+        vendorId={vendor.user_id}
+        currency={vendor.currency}
+        onAddToCart={(p) => { addToCart(p as Product); setActiveProduct(null); }}
+      />
 
       <footer className="text-center pt-8 text-xs text-muted-foreground">
         Powered by <Link to="/" className="font-medium text-foreground hover:underline">katalog</Link>

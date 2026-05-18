@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Eye, MousePointerClick, MessageCircle, TrendingUp, Info, Copy } from "lucide-react";
+import { Loader2, Eye, MousePointerClick, MessageCircle, TrendingUp, Info, Copy, Star } from "lucide-react";
 import { SOURCE_LABELS, type TrafficSource } from "@/lib/analytics";
 import { toast } from "sonner";
 
@@ -24,6 +24,7 @@ interface EventRow {
 }
 
 interface ProductLite { id: string; name: string; }
+interface ReviewRow { id: string; product_id: string; customer_name: string; rating: number; comment: string | null; created_at: string; }
 
 type Range = "7d" | "all";
 
@@ -41,6 +42,7 @@ function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<EventRow[]>([]);
   const [products, setProducts] = useState<ProductLite[]>([]);
+  const [reviews, setReviews] = useState<ReviewRow[]>([]);
   const [slug, setSlug] = useState<string>("");
 
   useEffect(() => {
@@ -56,14 +58,23 @@ function AnalyticsPage() {
         .order("created_at", { ascending: false })
         .limit(5000);
       if (since) q = q.gte("created_at", since);
-      const [{ data: evs }, { data: prods }, { data: profile }] = await Promise.all([
+      let rq = supabase
+        .from("product_reviews")
+        .select("id,product_id,customer_name,rating,comment,created_at")
+        .eq("vendor_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(500);
+      if (since) rq = rq.gte("created_at", since);
+      const [{ data: evs }, { data: prods }, { data: profile }, { data: revs }] = await Promise.all([
         q,
         supabase.from("products").select("id,name").eq("vendor_id", user.id),
         supabase.from("vendor_profiles").select("slug").eq("user_id", user.id).maybeSingle(),
+        rq,
       ]);
       if (cancelled) return;
       setEvents((evs ?? []) as EventRow[]);
       setProducts((prods ?? []) as ProductLite[]);
+      setReviews((revs ?? []) as ReviewRow[]);
       setSlug(profile?.slug ?? "");
       setLoading(false);
     })();
@@ -265,6 +276,46 @@ function AnalyticsPage() {
                     <Badge variant="secondary" className="shrink-0 tabular-nums">{p.count} clicks</Badge>
                   </li>
                 ))}
+              </ul>
+            )}
+          </Card>
+
+          {/* Customer reviews */}
+          <Card className="p-5 shadow-card">
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div>
+                <h2 className="font-display font-semibold text-base">Customer reviews</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {reviews.length === 0
+                    ? "No reviews yet."
+                    : `${reviews.length} review${reviews.length > 1 ? "s" : ""} · avg ${(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)}★`}
+                </p>
+              </div>
+            </div>
+            {reviews.length === 0 ? (
+              <p className="text-sm text-muted-foreground">When customers leave reviews on your products, they'll show up here.</p>
+            ) : (
+              <ul className="space-y-3 max-h-96 overflow-y-auto pr-1">
+                {reviews.map(r => {
+                  const productName = products.find(p => p.id === r.product_id)?.name ?? "Deleted product";
+                  return (
+                    <li key={r.id} className="rounded-lg border border-border p-3">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="font-medium text-sm truncate">{r.customer_name}</span>
+                          <Badge variant="secondary" className="text-[10px] truncate max-w-[12rem]">{productName}</Badge>
+                        </div>
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map(n => (
+                            <Star key={n} className={`size-3.5 ${n <= r.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
+                          ))}
+                        </div>
+                      </div>
+                      {r.comment && <p className="text-sm text-muted-foreground mt-1.5 whitespace-pre-wrap">{r.comment}</p>}
+                      <p className="text-[10px] text-muted-foreground mt-1.5">{new Date(r.created_at).toLocaleDateString()}</p>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </Card>

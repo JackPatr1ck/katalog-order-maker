@@ -41,6 +41,7 @@ function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<EventRow[]>([]);
   const [products, setProducts] = useState<ProductLite[]>([]);
+  const [reviews, setReviews] = useState<ReviewRow[]>([]);
   const [slug, setSlug] = useState<string>("");
 
   useEffect(() => {

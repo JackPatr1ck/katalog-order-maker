@@ -333,9 +333,9 @@ function DashboardLayout() {
             <SheetContent side="left" className="w-72 p-0 flex flex-col">
               <div className="px-5 py-5 border-b border-border flex items-center gap-3">
                 <img
-                  src={platformLogo}
-                  alt="Katalog"
-                  className="size-9 object-contain shrink-0"
+                  src={profile.logo_url || platformLogo}
+                  alt={profile.business_name}
+                  className="size-9 object-contain shrink-0 rounded-md"
                 />
                 <div className="min-w-0">
                   <h1 className="font-display text-[15px] font-semibold text-primary leading-tight truncate">

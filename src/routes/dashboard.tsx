@@ -273,9 +273,9 @@ function DashboardLayout() {
         <div className="px-6 xl:px-7 py-6 xl:py-7 border-b border-border">
           <Link to="/dashboard" className="flex items-center gap-3">
             <img
-              src={platformLogo}
-              alt="Katalog"
-              className="size-10 xl:size-12 object-contain shrink-0"
+              src={profile.logo_url || platformLogo}
+              alt={profile.business_name}
+              className="size-10 xl:size-12 object-contain shrink-0 rounded-md"
             />
             <div className="min-w-0">
               <h1 className="font-display text-base xl:text-lg font-semibold text-primary tracking-tight leading-tight truncate">
@@ -333,9 +333,9 @@ function DashboardLayout() {
             <SheetContent side="left" className="w-72 p-0 flex flex-col">
               <div className="px-5 py-5 border-b border-border flex items-center gap-3">
                 <img
-                  src={platformLogo}
-                  alt="Katalog"
-                  className="size-9 object-contain shrink-0"
+                  src={profile.logo_url || platformLogo}
+                  alt={profile.business_name}
+                  className="size-9 object-contain shrink-0 rounded-md"
                 />
                 <div className="min-w-0">
                   <h1 className="font-display text-[15px] font-semibold text-primary leading-tight truncate">

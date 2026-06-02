@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -17,8 +18,10 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const [billing, setBilling] = useState<"monthly" | "annual">("monthly");
   return (
     <div className="min-h-screen bg-muted/40 p-3 sm:p-6">
+
       <div className="relative max-w-7xl mx-auto bg-background rounded-3xl shadow-card overflow-hidden border border-border">
         {/* Nav */}
         <header className="relative z-20 px-5 sm:px-10 h-16 sm:h-20 flex items-center justify-between border-b border-border/60">
@@ -318,24 +321,47 @@ function Landing() {
               <span className="text-xs uppercase tracking-widest text-primary font-semibold">Pricing</span>
               <h2 className="font-display text-3xl sm:text-5xl font-bold mt-3 leading-tight">Simple, honest pricing</h2>
               <p className="text-muted-foreground mt-4">Start free. Upgrade only when you outgrow it.</p>
+              <div className="mt-7 inline-flex items-center gap-1 p-1 rounded-full border border-border bg-card">
+                <button
+                  type="button"
+                  onClick={() => setBilling("monthly")}
+                  className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors ${billing === "monthly" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  Monthly
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBilling("annual")}
+                  className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors flex items-center gap-2 ${billing === "annual" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  Annual
+                  <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${billing === "annual" ? "bg-primary text-primary-foreground" : "bg-primary/15 text-primary"}`}>2 months free</span>
+                </button>
+              </div>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {[
-                { name: "Starter", price: "₦0", originalPrice: null, period: "free forever", features: ["Up to 5 products", "1 shareable link", "WhatsApp checkout", "Basic analytics"], cta: "Get started", featured: false, badge: null },
-                { name: "Hustler", price: "₦1,396", originalPrice: "₦3,490", period: "per month", features: ["Unlimited products", "Custom domain", "Advanced analytics", "Order CSV export", "Priority support"], cta: "Get started", featured: true, badge: "60% off — first 1,000 vendors" },
-                { name: "Business", price: "₦12,000", originalPrice: null, period: "per month", features: ["Multiple staff seats", "Bulk pricing tiers", "API access", "Dedicated success manager"], cta: "Contact sales", featured: false, badge: null },
-              ].map((p) => (
+                { name: "Starter", monthly: 0, annual: 0, originalMonthly: null, originalAnnual: null, features: ["Up to 5 products", "1 shareable link", "WhatsApp checkout", "Basic analytics"], cta: "Get started", featured: false, badge: null },
+                { name: "Hustler", monthly: 1396, annual: 13960, originalMonthly: 3490, originalAnnual: 34900, features: ["Unlimited products", "1 shareable link", "Advanced analytics", "Order CSV export", "Priority support"], cta: "Get started", featured: true, badge: "60% off — first 1,000 vendors" },
+                { name: "Business", monthly: 12000, annual: 120000, originalMonthly: null, originalAnnual: null, features: ["Multiple staff seats", "Bulk pricing tiers", "API access", "Dedicated success manager"], cta: "Contact sales", featured: false, badge: null },
+              ].map((p) => {
+                const amount = billing === "monthly" ? p.monthly : p.annual;
+                const original = billing === "monthly" ? p.originalMonthly : p.originalAnnual;
+                const period = p.monthly === 0 ? "free forever" : billing === "monthly" ? "per month" : "per year";
+                const priceLabel = p.monthly === 0 ? "₦0" : `₦${amount.toLocaleString()}`;
+                const originalLabel = original ? `₦${original.toLocaleString()}` : null;
+                return (
                 <div key={p.name} className={`relative p-7 rounded-2xl border ${p.featured ? "bg-foreground text-background border-foreground shadow-elegant" : "bg-card border-border"}`}>
                   {p.featured && (
                     <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] uppercase tracking-widest font-semibold px-3 py-1 rounded-full bg-primary text-primary-foreground">Most popular</span>
                   )}
                   <h3 className="font-display text-xl font-semibold">{p.name}</h3>
                   <div className="mt-3 flex items-baseline gap-2 flex-wrap">
-                    <span className="font-display text-4xl font-bold">{p.price}</span>
-                    {p.originalPrice && (
-                      <span className={`text-lg line-through ${p.featured ? "text-background/40" : "text-muted-foreground/60"}`}>{p.originalPrice}</span>
+                    <span className="font-display text-4xl font-bold">{priceLabel}</span>
+                    {originalLabel && (
+                      <span className={`text-lg line-through ${p.featured ? "text-background/40" : "text-muted-foreground/60"}`}>{originalLabel}</span>
                     )}
-                    <span className={`text-sm ${p.featured ? "text-background/60" : "text-muted-foreground"}`}>{p.period}</span>
+                    <span className={`text-sm ${p.featured ? "text-background/60" : "text-muted-foreground"}`}>{period}</span>
                   </div>
                   {p.badge && (
                     <span className="inline-block mt-3 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-primary/15 text-primary-glow">{p.badge}</span>
@@ -352,9 +378,11 @@ function Landing() {
                     <Button variant={p.featured ? "secondary" : "outline"} className="w-full rounded-full">{p.cta}</Button>
                   </Link>
                 </div>
-              ))}
+                );
+              })}
 
             </div>
+
           </div>
         </section>
 

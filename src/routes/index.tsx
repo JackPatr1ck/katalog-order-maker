@@ -18,8 +18,10 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const [billing, setBilling] = useState<"monthly" | "annual">("monthly");
   return (
     <div className="min-h-screen bg-muted/40 p-3 sm:p-6">
+
       <div className="relative max-w-7xl mx-auto bg-background rounded-3xl shadow-card overflow-hidden border border-border">
         {/* Nav */}
         <header className="relative z-20 px-5 sm:px-10 h-16 sm:h-20 flex items-center justify-between border-b border-border/60">

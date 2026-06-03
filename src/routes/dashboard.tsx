@@ -15,6 +15,8 @@ import {
   Receipt,
   Download,
   BarChart3,
+  ShieldAlert,
+
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -76,6 +78,8 @@ function DashboardLayout() {
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [selected, setSelected] = useState<OrderRow | null>(null);
   const [items, setItems] = useState<OrderItemRow[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+
 
   useEffect(() => {
     if (loading) return;
@@ -112,6 +116,13 @@ function DashboardLayout() {
   useEffect(() => {
     if (!user) return;
     void loadOrders();
+    void supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
   }, [user, loadOrders]);
 
   if (loading || profileLoading || !profile) {
@@ -128,7 +139,9 @@ function DashboardLayout() {
     { to: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
     { to: `/s/${profile.slug}`, label: "Catalog Link", icon: Globe, external: true },
     { to: "/dashboard/settings", label: "Profile", icon: User },
+    ...(isAdmin ? [{ to: "/admin", label: "Super Admin", icon: ShieldAlert }] : []),
   ];
+
 
   const isActive = (to: string, exact?: boolean) =>
     exact ? location.pathname === to : location.pathname.startsWith(to);

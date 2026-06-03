@@ -78,6 +78,8 @@ function DashboardLayout() {
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [selected, setSelected] = useState<OrderRow | null>(null);
   const [items, setItems] = useState<OrderItemRow[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+
 
   useEffect(() => {
     if (loading) return;

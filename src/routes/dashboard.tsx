@@ -15,6 +15,8 @@ import {
   Receipt,
   Download,
   BarChart3,
+  ShieldAlert,
+
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";

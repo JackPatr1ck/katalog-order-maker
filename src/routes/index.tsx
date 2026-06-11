@@ -249,7 +249,7 @@ function Landing() {
             </div>
             <div className="order-1 lg:order-2">
               <div className="relative rounded-3xl overflow-hidden bg-accent/40 border border-border shadow-elegant">
-                <img src={storefrontPreview} alt="Public catalog storefront preview on mobile" loading="lazy" width={1024} height={1024} className="w-full h-auto" />
+                <img src={storefrontPreview.url} alt="Public catalog storefront preview on mobile" loading="lazy" width={1024} height={1024} className="w-full h-auto" />
               </div>
             </div>
           </div>

@@ -5,7 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Check, MessageCircle, ShoppingBag, Clock, Image as ImageIcon, Store, Users, BarChart3, Truck, BookOpen, PlayCircle, FileText, Sparkles, Zap, Shield } from "lucide-react";
 import logo from "@/assets/logo.png";
 import storefrontPreview from "@/assets/storefront-mockup.png.asset.json";
-import analyticsPreview from "@/assets/preview-analytics.jpg";
+import analyticsPreview from "@/assets/analytics-preview.png.asset.json";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -260,7 +260,7 @@ function Landing() {
           <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="relative rounded-3xl overflow-hidden bg-card border border-border shadow-elegant">
-                <img src={analyticsPreview} alt="Customer analytics dashboard preview" loading="lazy" width={1280} height={896} className="w-full h-auto" />
+                <img src={analyticsPreview.url} alt="Customer analytics dashboard preview" loading="lazy" width={1280} height={896} className="w-full h-auto" />
               </div>
             </div>
             <div>

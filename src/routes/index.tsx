@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Check, MessageCircle, ShoppingBag, Clock, Image as ImageIcon, Store, Users, BarChart3, Truck, BookOpen, PlayCircle, FileText, Sparkles, Zap, Shield } from "lucide-react";
 import logo from "@/assets/logo.png";
-import storefrontPreview from "@/assets/preview-storefront.jpg";
+import storefrontPreview from "@/assets/storefront-mockup.png.asset.json";
 import analyticsPreview from "@/assets/preview-analytics.jpg";
 
 export const Route = createFileRoute("/")({
@@ -249,7 +249,7 @@ function Landing() {
             </div>
             <div className="order-1 lg:order-2">
               <div className="relative rounded-3xl overflow-hidden bg-accent/40 border border-border shadow-elegant">
-                <img src={storefrontPreview} alt="Public catalog storefront preview on mobile" loading="lazy" width={1024} height={1024} className="w-full h-auto" />
+                <img src={storefrontPreview.url} alt="Public catalog storefront preview on mobile" loading="lazy" width={1024} height={1024} className="w-full h-auto" />
               </div>
             </div>
           </div>

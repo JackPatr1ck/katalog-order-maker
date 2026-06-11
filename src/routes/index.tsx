@@ -342,7 +342,7 @@ function Landing() {
             <div className="grid md:grid-cols-3 gap-6">
               {[
                 { name: "Starter", monthly: 0, annual: 0, originalMonthly: null, originalAnnual: null, features: ["Up to 5 products", "1 shareable link", "WhatsApp checkout", "Basic analytics"], cta: "Get started", featured: false, badge: null },
-                { name: "Hustler", monthly: 1396, annual: 13960, originalMonthly: 3490, originalAnnual: 34900, features: ["Unlimited products", "1 shareable link", "Advanced analytics", "Order CSV export", "Priority support"], cta: "Get started", featured: true, badge: "60% off — first 1,000 vendors" },
+                { name: "Hustler", monthly: 1047, annual: 10470, originalMonthly: 3490, originalAnnual: 34900, features: ["Unlimited products", "1 shareable link", "Advanced analytics", "Order CSV export", "Priority support"], cta: "Get started", featured: true, badge: "70% off — first 1,000 vendors" },
                 { name: "Business", monthly: 12000, annual: 120000, originalMonthly: null, originalAnnual: null, features: ["Multiple staff seats", "Bulk pricing tiers", "API access", "Dedicated success manager"], cta: "Contact sales", featured: false, badge: null },
               ].map((p) => {
                 const amount = billing === "monthly" ? p.monthly : p.annual;

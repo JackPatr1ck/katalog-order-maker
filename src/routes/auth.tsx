@@ -135,7 +135,11 @@ function AuthPage() {
               <Checkbox id="remember" />
               <span>Remember me</span>
             </label>
-            <button type="button" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/forgot-password" })}
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
               Forgot Password?
             </button>
           </div>

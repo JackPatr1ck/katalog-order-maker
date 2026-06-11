@@ -5,7 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Check, MessageCircle, ShoppingBag, Clock, Image as ImageIcon, Store, Users, BarChart3, Truck, BookOpen, PlayCircle, FileText, Sparkles, Zap, Shield } from "lucide-react";
 import logo from "@/assets/logo.png";
 import storefrontPreview from "@/assets/storefront-mockup.png.asset.json";
-import analyticsPreview from "@/assets/preview-analytics.jpg";
+import analyticsPreview from "@/assets/analytics-preview.png.asset.json";
 
 export const Route = createFileRoute("/")({
   component: Landing,

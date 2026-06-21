@@ -287,16 +287,16 @@ function DashboardLayout() {
         <div className="px-6 xl:px-7 py-6 xl:py-7 border-b border-border">
           <Link to="/dashboard" className="flex items-center gap-3">
             <img
-              src={profile.logo_url || storefrontPlaceholder}
-              alt={profile.business_name}
+              src={platformLogo}
+              alt="Katalog"
               className="size-10 xl:size-12 object-contain shrink-0 rounded-md"
             />
             <div className="min-w-0">
               <h1 className="font-display text-base xl:text-lg font-semibold text-primary tracking-tight leading-tight truncate">
-                {profile.business_name}
+                Katalog
               </h1>
               <p className="text-[11px] text-muted-foreground mt-0.5 truncate">
-                Katalog workspace
+                Vendor workspace
               </p>
             </div>
           </Link>
@@ -347,16 +347,16 @@ function DashboardLayout() {
             <SheetContent side="left" className="w-72 p-0 flex flex-col">
               <div className="px-5 py-5 border-b border-border flex items-center gap-3">
                 <img
-                  src={profile.logo_url || storefrontPlaceholder}
-                  alt={profile.business_name}
+                  src={platformLogo}
+                  alt="Katalog"
                   className="size-9 object-contain shrink-0 rounded-md"
                 />
                 <div className="min-w-0">
                   <h1 className="font-display text-[15px] font-semibold text-primary leading-tight truncate">
-                    {profile.business_name}
+                    Katalog
                   </h1>
                   <p className="text-[11px] text-muted-foreground truncate">
-                    Katalog workspace
+                    Vendor workspace
                   </p>
                 </div>
               </div>
@@ -384,9 +384,13 @@ function DashboardLayout() {
           </Sheet>
 
           <div className="flex-1 flex items-center justify-center gap-2 min-w-0">
-            <img src={platformLogo} alt="" className="size-6 object-contain shrink-0" />
+            <img
+              src={profile.logo_url || storefrontPlaceholder}
+              alt={profile.business_name}
+              className="size-7 object-contain shrink-0 rounded-md"
+            />
             <h1 className="font-display font-semibold text-base truncate">
-              {title}
+              {profile.business_name}
             </h1>
           </div>
 
@@ -407,6 +411,23 @@ function DashboardLayout() {
 
       {/* Main content */}
       <main className="flex-1 lg:ml-72 min-w-0">
+        {/* Desktop main header */}
+        <header className="hidden lg:flex items-center justify-between gap-4 px-8 lg:px-12 py-5 border-b border-border bg-background sticky top-0 z-30">
+          <div className="flex items-center gap-3 min-w-0">
+            <img
+              src={profile.logo_url || storefrontPlaceholder}
+              alt={profile.business_name}
+              className="size-9 object-contain shrink-0 rounded-md"
+            />
+            <div className="min-w-0">
+              <h2 className="font-display font-semibold text-base truncate">
+                {profile.business_name}
+              </h2>
+              <p className="text-[11px] text-muted-foreground truncate">{title}</p>
+            </div>
+          </div>
+        </header>
+
         <div className="max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 py-6 lg:py-12">
           <Outlet />
         </div>

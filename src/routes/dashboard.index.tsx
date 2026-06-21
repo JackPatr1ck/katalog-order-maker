@@ -74,16 +74,6 @@ function DashboardHome() {
     <div className="space-y-12">
       {/* Greeting */}
       <section>
-        <div className="flex items-center gap-2.5 mb-6 sm:mb-8">
-          <img
-            src={logo}
-            alt="Katalog"
-            className="size-8 sm:size-9 object-contain shrink-0"
-          />
-          <span className="font-display text-lg sm:text-xl font-semibold text-primary tracking-tight">
-            Katalog
-          </span>
-        </div>
         <p className="text-[10px] sm:text-xs font-semibold tracking-[0.18em] uppercase text-muted-foreground mb-1 sm:mb-2">
           Dashboard
         </p>

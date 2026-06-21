@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Copy, Package2, Plus, ArrowRight } from "lucide-react";
 import { formatMoney } from "@/lib/format";
 import { toast } from "sonner";
-import logo from "@/assets/logo.png";
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardHome,

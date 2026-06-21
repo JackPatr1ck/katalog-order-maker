@@ -285,21 +285,21 @@ function DashboardLayout() {
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 lg:left-0 border-r border-border bg-background">
         <div className="px-6 xl:px-7 py-6 xl:py-7 border-b border-border">
-          <Link to="/dashboard" className="flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <img
-              src={platformLogo}
-              alt="Katalog"
+              src={profile.logo_url || storefrontPlaceholder}
+              alt={profile.business_name}
               className="size-10 xl:size-12 object-contain shrink-0 rounded-md"
             />
             <div className="min-w-0">
               <h1 className="font-display text-base xl:text-lg font-semibold text-primary tracking-tight leading-tight truncate">
-                Katalog
+                {profile.business_name}
               </h1>
               <p className="text-[11px] text-muted-foreground mt-0.5 truncate">
                 Vendor workspace
               </p>
             </div>
-          </Link>
+          </div>
         </div>
 
         <div className="flex-1 px-5 py-7 overflow-y-auto space-y-7">

@@ -347,13 +347,13 @@ function DashboardLayout() {
             <SheetContent side="left" className="w-72 p-0 flex flex-col">
               <div className="px-5 py-5 border-b border-border flex items-center gap-3">
                 <img
-                  src={platformLogo}
-                  alt="Katalog"
+                  src={profile.logo_url || storefrontPlaceholder}
+                  alt={profile.business_name}
                   className="size-9 object-contain shrink-0 rounded-md"
                 />
                 <div className="min-w-0">
                   <h1 className="font-display text-[15px] font-semibold text-primary leading-tight truncate">
-                    Katalog
+                    {profile.business_name}
                   </h1>
                   <p className="text-[11px] text-muted-foreground truncate">
                     Vendor workspace
@@ -385,12 +385,12 @@ function DashboardLayout() {
 
           <div className="flex-1 flex items-center justify-center gap-2 min-w-0">
             <img
-              src={profile.logo_url || storefrontPlaceholder}
-              alt={profile.business_name}
+              src={platformLogo}
+              alt="Katalog"
               className="size-7 object-contain shrink-0 rounded-md"
             />
             <h1 className="font-display font-semibold text-base truncate">
-              {profile.business_name}
+              Katalog
             </h1>
           </div>
 
@@ -415,13 +415,13 @@ function DashboardLayout() {
         <header className="hidden lg:flex items-center justify-between gap-4 px-8 lg:px-12 py-5 border-b border-border bg-background sticky top-0 z-30">
           <div className="flex items-center gap-3 min-w-0">
             <img
-              src={profile.logo_url || storefrontPlaceholder}
-              alt={profile.business_name}
+              src={platformLogo}
+              alt="Katalog"
               className="size-9 object-contain shrink-0 rounded-md"
             />
             <div className="min-w-0">
               <h2 className="font-display font-semibold text-base truncate">
-                {profile.business_name}
+                Katalog
               </h2>
               <p className="text-[11px] text-muted-foreground truncate">{title}</p>
             </div>

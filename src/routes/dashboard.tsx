@@ -492,11 +492,109 @@ function DashboardLayout() {
                   <span>Total</span>
                   <span>{formatMoney(selected.total_cents, profile.currency)}</span>
                 </div>
+                <PaymentLinkPanel
+                  order={selected}
+                  currency={profile.currency}
+                  onUpdated={(patch) => {
+                    setSelected((cur) => (cur ? { ...cur, ...patch } : cur));
+                    setOrders((cur) => cur.map((o) => (o.id === selected.id ? { ...o, ...patch } : o)));
+                  }}
+                />
               </div>
             </>
           )}
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function PaymentLinkPanel({
+  order,
+  currency,
+  onUpdated,
+}: {
+  order: OrderRow;
+  currency: string;
+  onUpdated: (patch: Partial<OrderRow>) => void;
+}) {
+  const genLink = useServerFn(generatePaymentLink);
+  const [busy, setBusy] = useState(false);
+  const isNgn = currency === "NGN";
+  const paid = !!order.paid_at;
+  const expired =
+    !paid && order.payment_link_expires_at && new Date(order.payment_link_expires_at) < new Date();
+  const hasActive = !paid && !expired && !!order.payment_reference;
+
+  const payUrl =
+    order.payment_reference && typeof window !== "undefined"
+      ? `${window.location.origin}/pay/${order.payment_reference}`
+      : "";
+
+  async function generate() {
+    setBusy(true);
+    try {
+      const res = await genLink({ data: { order_id: order.id } });
+      const url = `${window.location.origin}/pay/${res.reference}`;
+      const expires = new Date(Date.now() + res.expires_in_hours * 60 * 60 * 1000).toISOString();
+      onUpdated({
+        payment_reference: res.reference,
+        payment_link_expires_at: expires,
+        status: "awaiting_payment",
+      });
+      await navigator.clipboard.writeText(url).catch(() => {});
+      toast.success("Payment link copied — paste it in your WhatsApp chat");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not generate link");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (paid) {
+    return (
+      <div className="rounded-lg bg-success/10 border border-success/30 p-3 text-sm text-center">
+        ✓ Paid
+      </div>
+    );
+  }
+
+  if (!isNgn) {
+    return (
+      <div className="rounded-lg bg-muted p-3 text-xs text-muted-foreground text-center">
+        Payment links are only available for NGN storefronts.
+      </div>
+    );
+  }
+
+  return (
+    <div className="border-t border-border pt-4 space-y-2">
+      {hasActive ? (
+        <>
+          <p className="text-xs font-medium text-muted-foreground">PAYMENT LINK</p>
+          <div className="flex items-center gap-2">
+            <code className="flex-1 px-2.5 py-2 bg-muted rounded-md text-[11px] truncate">{payUrl}</code>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                navigator.clipboard.writeText(payUrl);
+                toast.success("Copied");
+              }}
+            >
+              <Copy className="size-3.5" />
+            </Button>
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            Expires {new Date(order.payment_link_expires_at!).toLocaleString()}
+          </p>
+        </>
+      ) : (
+        <Button onClick={generate} disabled={busy} className="w-full gap-2 shadow-elegant">
+          {busy ? <Loader2 className="size-4 animate-spin" /> : <Link2 className="size-4" />}
+          {expired ? "Generate new payment link" : "Generate payment link"}
+        </Button>
+      )}
     </div>
   );
 }

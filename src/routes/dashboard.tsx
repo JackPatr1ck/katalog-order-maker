@@ -16,7 +16,8 @@ import {
   Download,
   BarChart3,
   ShieldAlert,
-
+  Wallet,
+  Link2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -24,6 +25,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatMoney } from "@/lib/format";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { generatePaymentLink } from "@/lib/payments.functions";
 import platformLogo from "@/assets/logo.png";
 import storefrontPlaceholder from "@/assets/storefront-placeholder.png";
 
@@ -47,6 +50,9 @@ interface OrderRow {
   total_cents: number;
   status: string;
   created_at: string;
+  payment_reference: string | null;
+  payment_link_expires_at: string | null;
+  paid_at: string | null;
 }
 
 interface OrderItemRow {
@@ -66,6 +72,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/dashboard/catalog": "Products",
   "/dashboard/analytics": "Analytics",
   "/dashboard/settings": "Profile",
+  "/dashboard/settings/payouts": "Payouts",
 };
 
 function DashboardLayout() {
@@ -139,6 +146,7 @@ function DashboardLayout() {
     { to: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
     { to: `/s/${profile.slug}`, label: "Catalog Link", icon: Globe, external: true },
     { to: "/dashboard/settings", label: "Profile", icon: User },
+    { to: "/dashboard/settings/payouts", label: "Payouts", icon: Wallet },
     ...(isAdmin ? [{ to: "/admin", label: "Super Admin", icon: ShieldAlert }] : []),
   ];
 

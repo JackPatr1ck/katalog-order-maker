@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, Copy, ExternalLink, Upload, Trash2, ImageOff } from "lucide-react";
+import { Loader2, Copy, ExternalLink, Upload, Trash2, ImageOff, Wallet, ArrowRight } from "lucide-react";
 import { z } from "zod";
 import { normalizeWhatsApp, slugify } from "@/lib/format";
 
@@ -123,6 +123,19 @@ function SettingsPage() {
           <a href={url} target="_blank" rel="noreferrer"><Button variant="outline" size="icon"><ExternalLink className="size-4" /></Button></a>
         </div>
       </Card>
+
+      <Link to="/dashboard/settings/payouts" className="block">
+        <Card className="p-5 shadow-card hover:shadow-elegant transition-shadow flex items-center gap-4">
+          <div className="size-11 rounded-lg bg-accent flex items-center justify-center shrink-0">
+            <Wallet className="size-5 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium">Payouts</p>
+            <p className="text-xs text-muted-foreground">Connect a Nigerian bank account to accept card & bank-transfer payments.</p>
+          </div>
+          <ArrowRight className="size-4 text-muted-foreground" />
+        </Card>
+      </Link>
 
       <Card className="p-5 shadow-card space-y-4">
         <div className="space-y-2">

@@ -93,6 +93,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          amount_paid_cents: number | null
           created_at: string
           customer_name: string
           customer_phone: string
@@ -100,11 +101,18 @@ export type Database = {
           id: string
           note: string | null
           order_number: number
+          paid_at: string | null
+          payment_link_expires_at: string | null
+          payment_reference: string | null
+          paystack_access_code: string | null
+          paystack_authorization_url: string | null
+          paystack_reference: string | null
           status: string
           total_cents: number
           vendor_id: string
         }
         Insert: {
+          amount_paid_cents?: number | null
           created_at?: string
           customer_name: string
           customer_phone: string
@@ -112,11 +120,18 @@ export type Database = {
           id?: string
           note?: string | null
           order_number?: number
+          paid_at?: string | null
+          payment_link_expires_at?: string | null
+          payment_reference?: string | null
+          paystack_access_code?: string | null
+          paystack_authorization_url?: string | null
+          paystack_reference?: string | null
           status?: string
           total_cents?: number
           vendor_id: string
         }
         Update: {
+          amount_paid_cents?: number | null
           created_at?: string
           customer_name?: string
           customer_phone?: string
@@ -124,6 +139,12 @@ export type Database = {
           id?: string
           note?: string | null
           order_number?: number
+          paid_at?: string | null
+          payment_link_expires_at?: string | null
+          payment_reference?: string | null
+          paystack_access_code?: string | null
+          paystack_authorization_url?: string | null
+          paystack_reference?: string | null
           status?: string
           total_cents?: number
           vendor_id?: string
@@ -283,6 +304,45 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vendor_payouts: {
+        Row: {
+          account_name: string | null
+          account_number: string | null
+          bank_code: string | null
+          bank_name: string | null
+          business_name: string | null
+          created_at: string
+          paystack_subaccount_code: string | null
+          percentage_charge: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_name?: string | null
+          account_number?: string | null
+          bank_code?: string | null
+          bank_name?: string | null
+          business_name?: string | null
+          created_at?: string
+          paystack_subaccount_code?: string | null
+          percentage_charge?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_name?: string | null
+          account_number?: string | null
+          bank_code?: string | null
+          bank_name?: string | null
+          business_name?: string | null
+          created_at?: string
+          paystack_subaccount_code?: string | null
+          percentage_charge?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

@@ -20,6 +20,7 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as SSlugRouteImport } from './routes/s.$slug'
 import { Route as PayReferenceRouteImport } from './routes/pay.$reference'
 import { Route as OOrderIdRouteImport } from './routes/o.$orderId'
+import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardCatalogRouteImport } from './routes/dashboard.catalog'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard.settings.index'
@@ -83,6 +84,11 @@ const OOrderIdRoute = OOrderIdRouteImport.update({
   path: '/o/$orderId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardCatalogRoute = DashboardCatalogRouteImport.update({
   id: '/catalog',
   path: '/catalog',
@@ -94,9 +100,9 @@ const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
-  id: '/settings/',
-  path: '/settings/',
-  getParentRoute: () => DashboardRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardSettingsRoute,
 } as any)
 const PayReferenceSuccessRoute = PayReferenceSuccessRouteImport.update({
   id: '/success',
@@ -105,9 +111,9 @@ const PayReferenceSuccessRoute = PayReferenceSuccessRouteImport.update({
 } as any)
 const DashboardSettingsPayoutsRoute =
   DashboardSettingsPayoutsRouteImport.update({
-    id: '/settings/payouts',
-    path: '/settings/payouts',
-    getParentRoute: () => DashboardRoute,
+    id: '/payouts',
+    path: '/payouts',
+    getParentRoute: () => DashboardSettingsRoute,
   } as any)
 const ApiPublicPaystackWebhookRoute =
   ApiPublicPaystackWebhookRouteImport.update({
@@ -132,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/catalog': typeof DashboardCatalogRoute
+  '/dashboard/settings': typeof DashboardSettingsRouteWithChildren
   '/o/$orderId': typeof OOrderIdRoute
   '/pay/$reference': typeof PayReferenceRouteWithChildren
   '/s/$slug': typeof SSlugRoute
@@ -172,6 +179,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/catalog': typeof DashboardCatalogRoute
+  '/dashboard/settings': typeof DashboardSettingsRouteWithChildren
   '/o/$orderId': typeof OOrderIdRoute
   '/pay/$reference': typeof PayReferenceRouteWithChildren
   '/s/$slug': typeof SSlugRoute
@@ -194,6 +202,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/dashboard/analytics'
     | '/dashboard/catalog'
+    | '/dashboard/settings'
     | '/o/$orderId'
     | '/pay/$reference'
     | '/s/$slug'
@@ -233,6 +242,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/dashboard/analytics'
     | '/dashboard/catalog'
+    | '/dashboard/settings'
     | '/o/$orderId'
     | '/pay/$reference'
     | '/s/$slug'
@@ -338,6 +348,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OOrderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/catalog': {
       id: '/dashboard/catalog'
       path: '/catalog'
@@ -354,10 +371,10 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/settings/': {
       id: '/dashboard/settings/'
-      path: '/settings'
+      path: '/'
       fullPath: '/dashboard/settings/'
       preLoaderRoute: typeof DashboardSettingsIndexRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardSettingsRoute
     }
     '/pay/$reference/success': {
       id: '/pay/$reference/success'
@@ -368,10 +385,10 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/settings/payouts': {
       id: '/dashboard/settings/payouts'
-      path: '/settings/payouts'
+      path: '/payouts'
       fullPath: '/dashboard/settings/payouts'
       preLoaderRoute: typeof DashboardSettingsPayoutsRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardSettingsRoute
     }
     '/api/public/paystack/webhook': {
       id: '/api/public/paystack/webhook'
@@ -390,20 +407,31 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DashboardSettingsRouteChildren {
+  DashboardSettingsPayoutsRoute: typeof DashboardSettingsPayoutsRoute
+  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
+}
+
+const DashboardSettingsRouteChildren: DashboardSettingsRouteChildren = {
+  DashboardSettingsPayoutsRoute: DashboardSettingsPayoutsRoute,
+  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
+}
+
+const DashboardSettingsRouteWithChildren =
+  DashboardSettingsRoute._addFileChildren(DashboardSettingsRouteChildren)
+
 interface DashboardRouteChildren {
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
   DashboardCatalogRoute: typeof DashboardCatalogRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
-  DashboardSettingsPayoutsRoute: typeof DashboardSettingsPayoutsRoute
-  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
   DashboardCatalogRoute: DashboardCatalogRoute,
+  DashboardSettingsRoute: DashboardSettingsRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
-  DashboardSettingsPayoutsRoute: DashboardSettingsPayoutsRoute,
-  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(

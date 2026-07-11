@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, useNavigate, Link, useLocation } from "@tanstack/react-router";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -18,11 +18,14 @@ import {
   ShieldAlert,
   Wallet,
   Link2,
+  Bell,
+  CheckCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { formatMoney } from "@/lib/format";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
@@ -130,7 +133,52 @@ function DashboardLayout() {
       .eq("role", "admin")
       .maybeSingle()
       .then(({ data }) => setIsAdmin(!!data));
+
+    const channel = supabase
+      .channel(`orders-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders", filter: `vendor_id=eq.${user.id}` },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            const row = payload.new as OrderRow;
+            setOrders((cur) => [row, ...cur.filter((o) => o.id !== row.id)].slice(0, 8));
+            toast.success(`New order #${row.order_number} from ${row.customer_name}`);
+          } else if (payload.eventType === "UPDATE") {
+            const row = payload.new as OrderRow;
+            setOrders((cur) => cur.map((o) => (o.id === row.id ? row : o)));
+          }
+        },
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
   }, [user, loadOrders]);
+
+  const lastSeenKey = user ? `katalog-notifs-lastseen-${user.id}` : "";
+  const [lastSeen, setLastSeen] = useState<string>(() => {
+    if (typeof window === "undefined" || !user) return "";
+    return localStorage.getItem(`katalog-notifs-lastseen-${user.id}`) ?? "";
+  });
+  useEffect(() => {
+    if (typeof window === "undefined" || !user) return;
+    setLastSeen(localStorage.getItem(`katalog-notifs-lastseen-${user.id}`) ?? "");
+  }, [user]);
+
+  const unreadCount = useMemo(() => {
+    if (!lastSeen) return orders.length;
+    return orders.filter((o) => o.created_at > lastSeen).length;
+  }, [orders, lastSeen]);
+
+  const markAllRead = () => {
+    const latest = orders[0]?.created_at ?? new Date().toISOString();
+    if (typeof window !== "undefined" && lastSeenKey) {
+      localStorage.setItem(lastSeenKey, latest);
+    }
+    setLastSeen(latest);
+  };
+
 
   if (loading || profileLoading || !profile) {
     return (
@@ -402,18 +450,27 @@ function DashboardLayout() {
             </h1>
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="-mr-2"
-            onClick={() => {
-              navigator.clipboard.writeText(storefrontUrl);
-              toast.success("Shop link copied");
-            }}
-            aria-label="Copy shop link"
-          >
-            <Copy className="size-5" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <NotificationBell
+              orders={orders}
+              currency={profile.currency}
+              unreadCount={unreadCount}
+              onOpen={(o) => void openOrder(o)}
+              onMarkRead={markAllRead}
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="-mr-2"
+              onClick={() => {
+                navigator.clipboard.writeText(storefrontUrl);
+                toast.success("Shop link copied");
+              }}
+              aria-label="Copy shop link"
+            >
+              <Copy className="size-5" />
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -434,7 +491,15 @@ function DashboardLayout() {
               <p className="text-[11px] text-muted-foreground truncate">{title}</p>
             </div>
           </div>
+          <NotificationBell
+            orders={orders}
+            currency={profile.currency}
+            unreadCount={unreadCount}
+            onOpen={(o) => void openOrder(o)}
+            onMarkRead={markAllRead}
+          />
         </header>
+
 
         <div className="max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 py-6 lg:py-12">
           <Outlet />
@@ -598,3 +663,99 @@ function PaymentLinkPanel({
     </div>
   );
 }
+
+function NotificationBell({
+  orders,
+  currency,
+  unreadCount,
+  onOpen,
+  onMarkRead,
+}: {
+  orders: OrderRow[];
+  currency: string;
+  unreadCount: number;
+  onOpen: (o: OrderRow) => void;
+  onMarkRead: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  function timeAgo(iso: string) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return "just now";
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    const d = Math.floor(h / 24);
+    return `${d}d ago`;
+  }
+
+  return (
+    <Popover
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v);
+        if (v && unreadCount > 0) onMarkRead();
+      }}
+    >
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
+          <Bell className="size-5" />
+          {unreadCount > 0 && (
+            <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold flex items-center justify-center">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-80 p-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          <p className="text-sm font-semibold">Notifications</p>
+          {orders.length > 0 && (
+            <button
+              onClick={onMarkRead}
+              className="text-[11px] text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+            >
+              <CheckCheck className="size-3" /> Mark read
+            </button>
+          )}
+        </div>
+        {orders.length === 0 ? (
+          <div className="px-4 py-8 text-center">
+            <Bell className="size-5 text-muted-foreground mx-auto mb-2" />
+            <p className="text-xs text-muted-foreground">No notifications yet</p>
+          </div>
+        ) : (
+          <ul className="max-h-80 overflow-y-auto">
+            {orders.map((o) => (
+              <li key={o.id}>
+                <button
+                  onClick={() => {
+                    onOpen(o);
+                    setOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-3 hover:bg-accent/40 transition-colors border-b border-border last:border-0"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium truncate">
+                        New order #{o.order_number}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                        {o.customer_name} · {formatMoney(o.total_cents, currency)}
+                      </p>
+                    </div>
+                    <span className="text-[10px] text-muted-foreground shrink-0">
+                      {timeAgo(o.created_at)}
+                    </span>
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}
+

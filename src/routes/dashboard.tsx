@@ -663,3 +663,99 @@ function PaymentLinkPanel({
     </div>
   );
 }
+
+function NotificationBell({
+  orders,
+  currency,
+  unreadCount,
+  onOpen,
+  onMarkRead,
+}: {
+  orders: OrderRow[];
+  currency: string;
+  unreadCount: number;
+  onOpen: (o: OrderRow) => void;
+  onMarkRead: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  function timeAgo(iso: string) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return "just now";
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    const d = Math.floor(h / 24);
+    return `${d}d ago`;
+  }
+
+  return (
+    <Popover
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v);
+        if (v && unreadCount > 0) onMarkRead();
+      }}
+    >
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
+          <Bell className="size-5" />
+          {unreadCount > 0 && (
+            <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold flex items-center justify-center">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-80 p-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          <p className="text-sm font-semibold">Notifications</p>
+          {orders.length > 0 && (
+            <button
+              onClick={onMarkRead}
+              className="text-[11px] text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+            >
+              <CheckCheck className="size-3" /> Mark read
+            </button>
+          )}
+        </div>
+        {orders.length === 0 ? (
+          <div className="px-4 py-8 text-center">
+            <Bell className="size-5 text-muted-foreground mx-auto mb-2" />
+            <p className="text-xs text-muted-foreground">No notifications yet</p>
+          </div>
+        ) : (
+          <ul className="max-h-80 overflow-y-auto">
+            {orders.map((o) => (
+              <li key={o.id}>
+                <button
+                  onClick={() => {
+                    onOpen(o);
+                    setOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-3 hover:bg-accent/40 transition-colors border-b border-border last:border-0"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium truncate">
+                        New order #{o.order_number}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                        {o.customer_name} · {formatMoney(o.total_cents, currency)}
+                      </p>
+                    </div>
+                    <span className="text-[10px] text-muted-foreground shrink-0">
+                      {timeAgo(o.created_at)}
+                    </span>
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}
+

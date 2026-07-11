@@ -133,7 +133,52 @@ function DashboardLayout() {
       .eq("role", "admin")
       .maybeSingle()
       .then(({ data }) => setIsAdmin(!!data));
+
+    const channel = supabase
+      .channel(`orders-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders", filter: `vendor_id=eq.${user.id}` },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            const row = payload.new as OrderRow;
+            setOrders((cur) => [row, ...cur.filter((o) => o.id !== row.id)].slice(0, 8));
+            toast.success(`New order #${row.order_number} from ${row.customer_name}`);
+          } else if (payload.eventType === "UPDATE") {
+            const row = payload.new as OrderRow;
+            setOrders((cur) => cur.map((o) => (o.id === row.id ? row : o)));
+          }
+        },
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
   }, [user, loadOrders]);
+
+  const lastSeenKey = user ? `katalog-notifs-lastseen-${user.id}` : "";
+  const [lastSeen, setLastSeen] = useState<string>(() => {
+    if (typeof window === "undefined" || !user) return "";
+    return localStorage.getItem(`katalog-notifs-lastseen-${user.id}`) ?? "";
+  });
+  useEffect(() => {
+    if (typeof window === "undefined" || !user) return;
+    setLastSeen(localStorage.getItem(`katalog-notifs-lastseen-${user.id}`) ?? "");
+  }, [user]);
+
+  const unreadCount = useMemo(() => {
+    if (!lastSeen) return orders.length;
+    return orders.filter((o) => o.created_at > lastSeen).length;
+  }, [orders, lastSeen]);
+
+  const markAllRead = () => {
+    const latest = orders[0]?.created_at ?? new Date().toISOString();
+    if (typeof window !== "undefined" && lastSeenKey) {
+      localStorage.setItem(lastSeenKey, latest);
+    }
+    setLastSeen(latest);
+  };
+
 
   if (loading || profileLoading || !profile) {
     return (

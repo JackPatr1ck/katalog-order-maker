@@ -26,6 +26,7 @@ import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analy
 import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard.settings.index'
 import { Route as PayReferenceSuccessRouteImport } from './routes/pay.$reference.success'
 import { Route as DashboardSettingsPayoutsRouteImport } from './routes/dashboard.settings.payouts'
+import { Route as SSlugPProductIdRouteImport } from './routes/s.$slug.p.$productId'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack.webhook'
 import { Route as ApiPublicPayReferenceInitRouteImport } from './routes/api/public/pay.$reference.init'
 
@@ -115,6 +116,11 @@ const DashboardSettingsPayoutsRoute =
     path: '/payouts',
     getParentRoute: () => DashboardSettingsRoute,
   } as any)
+const SSlugPProductIdRoute = SSlugPProductIdRouteImport.update({
+  id: '/p/$productId',
+  path: '/p/$productId',
+  getParentRoute: () => SSlugRoute,
+} as any)
 const ApiPublicPaystackWebhookRoute =
   ApiPublicPaystackWebhookRouteImport.update({
     id: '/api/public/paystack/webhook',
@@ -141,12 +147,13 @@ export interface FileRoutesByFullPath {
   '/dashboard/settings': typeof DashboardSettingsRouteWithChildren
   '/o/$orderId': typeof OOrderIdRoute
   '/pay/$reference': typeof PayReferenceRouteWithChildren
-  '/s/$slug': typeof SSlugRoute
+  '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/settings/payouts': typeof DashboardSettingsPayoutsRoute
   '/pay/$reference/success': typeof PayReferenceSuccessRoute
   '/dashboard/settings/': typeof DashboardSettingsIndexRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
+  '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
   '/api/public/pay/$reference/init': typeof ApiPublicPayReferenceInitRoute
 }
 export interface FileRoutesByTo {
@@ -160,12 +167,13 @@ export interface FileRoutesByTo {
   '/dashboard/catalog': typeof DashboardCatalogRoute
   '/o/$orderId': typeof OOrderIdRoute
   '/pay/$reference': typeof PayReferenceRouteWithChildren
-  '/s/$slug': typeof SSlugRoute
+  '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/settings/payouts': typeof DashboardSettingsPayoutsRoute
   '/pay/$reference/success': typeof PayReferenceSuccessRoute
   '/dashboard/settings': typeof DashboardSettingsIndexRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
+  '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
   '/api/public/pay/$reference/init': typeof ApiPublicPayReferenceInitRoute
 }
 export interface FileRoutesById {
@@ -182,12 +190,13 @@ export interface FileRoutesById {
   '/dashboard/settings': typeof DashboardSettingsRouteWithChildren
   '/o/$orderId': typeof OOrderIdRoute
   '/pay/$reference': typeof PayReferenceRouteWithChildren
-  '/s/$slug': typeof SSlugRoute
+  '/s/$slug': typeof SSlugRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/settings/payouts': typeof DashboardSettingsPayoutsRoute
   '/pay/$reference/success': typeof PayReferenceSuccessRoute
   '/dashboard/settings/': typeof DashboardSettingsIndexRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
+  '/s/$slug/p/$productId': typeof SSlugPProductIdRoute
   '/api/public/pay/$reference/init': typeof ApiPublicPayReferenceInitRoute
 }
 export interface FileRouteTypes {
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
     | '/pay/$reference/success'
     | '/dashboard/settings/'
     | '/api/public/paystack/webhook'
+    | '/s/$slug/p/$productId'
     | '/api/public/pay/$reference/init'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/pay/$reference/success'
     | '/dashboard/settings'
     | '/api/public/paystack/webhook'
+    | '/s/$slug/p/$productId'
     | '/api/public/pay/$reference/init'
   id:
     | '__root__'
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/pay/$reference/success'
     | '/dashboard/settings/'
     | '/api/public/paystack/webhook'
+    | '/s/$slug/p/$productId'
     | '/api/public/pay/$reference/init'
   fileRoutesById: FileRoutesById
 }
@@ -264,7 +276,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   OOrderIdRoute: typeof OOrderIdRoute
   PayReferenceRoute: typeof PayReferenceRouteWithChildren
-  SSlugRoute: typeof SSlugRoute
+  SSlugRoute: typeof SSlugRouteWithChildren
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
   ApiPublicPayReferenceInitRoute: typeof ApiPublicPayReferenceInitRoute
 }
@@ -390,6 +402,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSettingsPayoutsRouteImport
       parentRoute: typeof DashboardSettingsRoute
     }
+    '/s/$slug/p/$productId': {
+      id: '/s/$slug/p/$productId'
+      path: '/p/$productId'
+      fullPath: '/s/$slug/p/$productId'
+      preLoaderRoute: typeof SSlugPProductIdRouteImport
+      parentRoute: typeof SSlugRoute
+    }
     '/api/public/paystack/webhook': {
       id: '/api/public/paystack/webhook'
       path: '/api/public/paystack/webhook'
@@ -450,6 +469,16 @@ const PayReferenceRouteWithChildren = PayReferenceRoute._addFileChildren(
   PayReferenceRouteChildren,
 )
 
+interface SSlugRouteChildren {
+  SSlugPProductIdRoute: typeof SSlugPProductIdRoute
+}
+
+const SSlugRouteChildren: SSlugRouteChildren = {
+  SSlugPProductIdRoute: SSlugPProductIdRoute,
+}
+
+const SSlugRouteWithChildren = SSlugRoute._addFileChildren(SSlugRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
@@ -460,7 +489,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   OOrderIdRoute: OOrderIdRoute,
   PayReferenceRoute: PayReferenceRouteWithChildren,
-  SSlugRoute: SSlugRoute,
+  SSlugRoute: SSlugRouteWithChildren,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
   ApiPublicPayReferenceInitRoute: ApiPublicPayReferenceInitRoute,
 }

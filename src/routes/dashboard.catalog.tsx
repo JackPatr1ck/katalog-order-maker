@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Loader2, Plus, Pencil, Trash2, ImagePlus, Package } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, ImagePlus, Package, Link as LinkIcon } from "lucide-react";
 import { formatMoney } from "@/lib/format";
 import { z } from "zod";
 
@@ -46,6 +46,7 @@ function CatalogPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [currency, setCurrency] = useState("USD");
+  const [shopSlug, setShopSlug] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Product | null>(null);
   const [showProductDialog, setShowProductDialog] = useState(false);
@@ -60,11 +61,11 @@ function CatalogPage() {
     if (!user) return;
     setLoading(true);
     const [{ data: prof }, { data: cats }, { data: prods }] = await Promise.all([
-      supabase.from("vendor_profiles").select("currency").eq("user_id", user.id).maybeSingle(),
+      supabase.from("vendor_profiles").select("currency, slug").eq("user_id", user.id).maybeSingle(),
       supabase.from("categories").select("*").eq("vendor_id", user.id).order("position"),
       supabase.from("products").select("*").eq("vendor_id", user.id).order("created_at", { ascending: false }),
     ]);
-    if (prof) setCurrency(prof.currency);
+    if (prof) { setCurrency(prof.currency); setShopSlug(prof.slug); }
     setCategories((cats ?? []) as Category[]);
     setProducts((prods ?? []) as Product[]);
     setLoading(false);
@@ -164,6 +165,25 @@ function CatalogPage() {
                 <div className="flex gap-2 mt-3">
                   <Button size="sm" variant="outline" className="flex-1 gap-1.5" onClick={() => { setEditing(p); setShowProductDialog(true); }}>
                     <Pencil className="size-3.5" /> Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5"
+                    disabled={!shopSlug || !p.is_active || p.stock === 0}
+                    title={!p.is_active ? "Product is hidden" : p.stock === 0 ? "Out of stock" : "Copy product link"}
+                    onClick={async () => {
+                      if (!shopSlug) return;
+                      const url = `${window.location.origin}/s/${shopSlug}/p/${p.id}`;
+                      try {
+                        await navigator.clipboard.writeText(url);
+                        toast.success("Product link copied");
+                      } catch {
+                        toast.error("Could not copy link");
+                      }
+                    }}
+                  >
+                    <LinkIcon className="size-3.5" /> Link
                   </Button>
                   <Button size="sm" variant="ghost" onClick={() => deleteProduct(p.id)}>
                     <Trash2 className="size-3.5 text-destructive" />

@@ -12,7 +12,7 @@ import { Loader2, Copy, ExternalLink, Upload, Trash2, ImageOff, Wallet, ArrowRig
 import { z } from "zod";
 import { normalizeWhatsApp, slugify } from "@/lib/format";
 
-export const Route = createFileRoute("/dashboard/settings")({
+export const Route = createFileRoute("/dashboard/settings/")({
   component: SettingsPage,
 });
 

@@ -23,6 +23,7 @@ import { Route as OOrderIdRouteImport } from './routes/o.$orderId'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardCatalogRouteImport } from './routes/dashboard.catalog'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
+import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard.settings.index'
 import { Route as PayReferenceSuccessRouteImport } from './routes/pay.$reference.success'
 import { Route as DashboardSettingsPayoutsRouteImport } from './routes/dashboard.settings.payouts'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack.webhook'
@@ -98,6 +99,11 @@ const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
 const PayReferenceSuccessRoute = PayReferenceSuccessRouteImport.update({
   id: '/success',
   path: '/success',
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/settings/payouts': typeof DashboardSettingsPayoutsRoute
   '/pay/$reference/success': typeof PayReferenceSuccessRoute
+  '/dashboard/settings/': typeof DashboardSettingsIndexRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/pay/$reference/init': typeof ApiPublicPayReferenceInitRoute
 }
@@ -151,13 +158,13 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/catalog': typeof DashboardCatalogRoute
-  '/dashboard/settings': typeof DashboardSettingsRouteWithChildren
   '/o/$orderId': typeof OOrderIdRoute
   '/pay/$reference': typeof PayReferenceRouteWithChildren
   '/s/$slug': typeof SSlugRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/settings/payouts': typeof DashboardSettingsPayoutsRoute
   '/pay/$reference/success': typeof PayReferenceSuccessRoute
+  '/dashboard/settings': typeof DashboardSettingsIndexRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/pay/$reference/init': typeof ApiPublicPayReferenceInitRoute
 }
@@ -179,6 +186,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/settings/payouts': typeof DashboardSettingsPayoutsRoute
   '/pay/$reference/success': typeof PayReferenceSuccessRoute
+  '/dashboard/settings/': typeof DashboardSettingsIndexRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/pay/$reference/init': typeof ApiPublicPayReferenceInitRoute
 }
@@ -201,6 +209,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/dashboard/settings/payouts'
     | '/pay/$reference/success'
+    | '/dashboard/settings/'
     | '/api/public/paystack/webhook'
     | '/api/public/pay/$reference/init'
   fileRoutesByTo: FileRoutesByTo
@@ -213,13 +222,13 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/dashboard/analytics'
     | '/dashboard/catalog'
-    | '/dashboard/settings'
     | '/o/$orderId'
     | '/pay/$reference'
     | '/s/$slug'
     | '/dashboard'
     | '/dashboard/settings/payouts'
     | '/pay/$reference/success'
+    | '/dashboard/settings'
     | '/api/public/paystack/webhook'
     | '/api/public/pay/$reference/init'
   id:
@@ -240,6 +249,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/dashboard/settings/payouts'
     | '/pay/$reference/success'
+    | '/dashboard/settings/'
     | '/api/public/paystack/webhook'
     | '/api/public/pay/$reference/init'
   fileRoutesById: FileRoutesById
@@ -359,6 +369,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAnalyticsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/settings/': {
+      id: '/dashboard/settings/'
+      path: '/'
+      fullPath: '/dashboard/settings/'
+      preLoaderRoute: typeof DashboardSettingsIndexRouteImport
+      parentRoute: typeof DashboardSettingsRoute
+    }
     '/pay/$reference/success': {
       id: '/pay/$reference/success'
       path: '/success'
@@ -392,10 +409,12 @@ declare module '@tanstack/react-router' {
 
 interface DashboardSettingsRouteChildren {
   DashboardSettingsPayoutsRoute: typeof DashboardSettingsPayoutsRoute
+  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
 }
 
 const DashboardSettingsRouteChildren: DashboardSettingsRouteChildren = {
   DashboardSettingsPayoutsRoute: DashboardSettingsPayoutsRoute,
+  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
 }
 
 const DashboardSettingsRouteWithChildren =

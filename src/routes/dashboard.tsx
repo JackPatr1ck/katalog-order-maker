@@ -450,18 +450,27 @@ function DashboardLayout() {
             </h1>
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="-mr-2"
-            onClick={() => {
-              navigator.clipboard.writeText(storefrontUrl);
-              toast.success("Shop link copied");
-            }}
-            aria-label="Copy shop link"
-          >
-            <Copy className="size-5" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <NotificationBell
+              orders={orders}
+              currency={profile.currency}
+              unreadCount={unreadCount}
+              onOpen={(o) => void openOrder(o)}
+              onMarkRead={markAllRead}
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="-mr-2"
+              onClick={() => {
+                navigator.clipboard.writeText(storefrontUrl);
+                toast.success("Shop link copied");
+              }}
+              aria-label="Copy shop link"
+            >
+              <Copy className="size-5" />
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -482,7 +491,15 @@ function DashboardLayout() {
               <p className="text-[11px] text-muted-foreground truncate">{title}</p>
             </div>
           </div>
+          <NotificationBell
+            orders={orders}
+            currency={profile.currency}
+            unreadCount={unreadCount}
+            onOpen={(o) => void openOrder(o)}
+            onMarkRead={markAllRead}
+          />
         </header>
+
 
         <div className="max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 py-6 lg:py-12">
           <Outlet />

@@ -17,7 +17,16 @@ export const Route = createFileRoute('/api/public/paystack/webhook')({
           return new Response('Invalid signature', { status: 401 });
         }
 
-        let event: { event?: string; data?: { reference?: string; amount?: number; paid_at?: string; status?: string } };
+        let event: {
+          event?: string;
+          data?: {
+            reference?: string;
+            amount?: number;
+            paid_at?: string;
+            status?: string;
+            metadata?: { type?: string; user_id?: string; plan?: string; cycle?: string } | null;
+          };
+        };
         try {
           event = JSON.parse(raw);
         } catch {
@@ -26,15 +35,41 @@ export const Route = createFileRoute('/api/public/paystack/webhook')({
 
         if (event.event === 'charge.success' && event.data?.reference && event.data.status === 'success') {
           const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-          await supabaseAdmin
-            .from('orders')
-            .update({
-              status: 'paid',
-              paid_at: event.data.paid_at ?? new Date().toISOString(),
-              amount_paid_cents: event.data.amount ?? null,
-            })
-            .eq('payment_reference', event.data.reference)
-            .is('paid_at', null);
+          const meta = event.data.metadata ?? null;
+
+          if (meta?.type === 'subscription' && meta.user_id && meta.plan && meta.cycle) {
+            const paidAt = event.data.paid_at ?? new Date().toISOString();
+            const start = new Date(paidAt);
+            const end = new Date(start);
+            if (meta.cycle === 'annual') end.setFullYear(end.getFullYear() + 1);
+            else end.setMonth(end.getMonth() + 1);
+
+            await supabaseAdmin
+              .from('vendor_subscriptions')
+              .upsert(
+                {
+                  user_id: meta.user_id,
+                  plan: meta.plan,
+                  billing_cycle: meta.cycle,
+                  status: 'active',
+                  current_period_start: start.toISOString(),
+                  current_period_end: end.toISOString(),
+                  last_reference: event.data.reference,
+                  amount_paid_kobo: event.data.amount ?? null,
+                },
+                { onConflict: 'user_id' },
+              );
+          } else {
+            await supabaseAdmin
+              .from('orders')
+              .update({
+                status: 'paid',
+                paid_at: event.data.paid_at ?? new Date().toISOString(),
+                amount_paid_cents: event.data.amount ?? null,
+              })
+              .eq('payment_reference', event.data.reference)
+              .is('paid_at', null);
+          }
         }
 
         return new Response('ok');

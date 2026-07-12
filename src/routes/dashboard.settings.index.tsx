@@ -137,6 +137,20 @@ function SettingsPage() {
         </Card>
       </Link>
 
+      <Link to="/dashboard/settings/plan" className="block">
+        <Card className="p-5 shadow-card hover:shadow-elegant transition-shadow flex items-center gap-4">
+          <div className="size-11 rounded-lg bg-accent flex items-center justify-center shrink-0">
+            <Sparkles className="size-5 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium">Plan & billing</p>
+            <p className="text-xs text-muted-foreground">See your current plan or upgrade for unlimited products, CSV export and advanced analytics.</p>
+          </div>
+          <ArrowRight className="size-4 text-muted-foreground" />
+        </Card>
+      </Link>
+
+
       <Card className="p-5 shadow-card space-y-4">
         <div className="space-y-2">
           <Label>Business logo</Label>

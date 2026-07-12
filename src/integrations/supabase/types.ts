@@ -389,6 +389,45 @@ export type Database = {
         }
         Relationships: []
       }
+      vendor_subscriptions: {
+        Row: {
+          amount_paid_kobo: number | null
+          billing_cycle: string | null
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          last_reference: string | null
+          plan: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_paid_kobo?: number | null
+          billing_cycle?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          last_reference?: string | null
+          plan?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_paid_kobo?: number | null
+          billing_cycle?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          last_reference?: string | null
+          plan?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

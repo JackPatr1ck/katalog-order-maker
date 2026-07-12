@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { ProductDetailDialog } from "@/components/product-detail-dialog";
 
-export const Route = createFileRoute("/s/$slug")({
+export const Route = createFileRoute("/s/$slug/")({
   component: Storefront,
 });
 

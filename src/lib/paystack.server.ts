@@ -94,6 +94,28 @@ export async function initializeTransaction(input: {
   return r.data;
 }
 
+// Initializes a platform-owned transaction (no subaccount split) — used for
+// vendor subscription payments where all funds go to the platform account.
+export async function initializeTransactionPlatform(input: {
+  email: string;
+  amount_kobo: number;
+  reference: string;
+  callback_url: string;
+  metadata?: Record<string, unknown>;
+}): Promise<InitTransactionResult> {
+  const r = await ps<{ data: InitTransactionResult }>(`/transaction/initialize`, {
+    method: 'POST',
+    body: JSON.stringify({
+      email: input.email,
+      amount: input.amount_kobo,
+      reference: input.reference,
+      callback_url: input.callback_url,
+      metadata: input.metadata,
+    }),
+  });
+  return r.data;
+}
+
 export async function verifyTransaction(reference: string) {
   const r = await ps<{ data: { status: string; amount: number; reference: string; paid_at: string; customer: { email: string } } }>(
     `/transaction/verify/${encodeURIComponent(reference)}`,

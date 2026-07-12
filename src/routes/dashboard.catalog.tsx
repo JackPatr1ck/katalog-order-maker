@@ -11,7 +11,10 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Loader2, Plus, Pencil, Trash2, ImagePlus, Package, Link as LinkIcon } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, ImagePlus, Package, Link as LinkIcon, Sparkles } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { getMySubscription } from "@/lib/subscription.functions";
 import { formatMoney } from "@/lib/format";
 import { z } from "zod";
 
@@ -51,6 +54,13 @@ function CatalogPage() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [showProductDialog, setShowProductDialog] = useState(false);
   const [newCatName, setNewCatName] = useState("");
+  const [plan, setPlan] = useState<"starter" | "hustler" | "business">("starter");
+  const loadSub = useServerFn(getMySubscription);
+
+  useEffect(() => { loadSub().then((s) => setPlan(s.plan as any)).catch(() => {}); }, [loadSub]);
+
+  const STARTER_LIMIT = 5;
+  const atLimit = plan === "starter" && products.length >= STARTER_LIMIT;
 
   useEffect(() => {
     if (!user) return;

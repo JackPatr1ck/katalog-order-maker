@@ -115,10 +115,29 @@ function CatalogPage() {
           <h1 className="font-display text-3xl font-bold">Catalog</h1>
           <p className="text-muted-foreground text-sm mt-1">Build the products customers will see in your shop.</p>
         </div>
-        <Button onClick={() => { setEditing(null); setShowProductDialog(true); }} className="gap-2 shadow-elegant">
+        <Button
+          onClick={() => { if (atLimit) { toast.error("Starter is capped at 5 products — upgrade to add more."); return; } setEditing(null); setShowProductDialog(true); }}
+          className="gap-2 shadow-elegant"
+          disabled={atLimit}
+        >
           <Plus className="size-4" /> New product
         </Button>
       </div>
+
+      {atLimit && (
+        <Card className="p-4 shadow-card border-primary/40 bg-primary/5 flex items-center gap-3">
+          <div className="size-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
+            <Sparkles className="size-4 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium">You've hit the 5-product Starter limit</p>
+            <p className="text-xs text-muted-foreground">Upgrade to Hustler for unlimited products, CSV export and advanced analytics.</p>
+          </div>
+          <Button asChild size="sm" className="shadow-elegant">
+            <Link to="/dashboard/settings/plan">Upgrade</Link>
+          </Button>
+        </Card>
+      )}
 
       {/* Categories */}
       <Card className="p-5 shadow-card">

@@ -71,7 +71,8 @@ function SingleProductPage() {
     if (!vendor || !product) return;
     const parsed = checkoutSchema.safeParse({ customer_name: name, customer_phone: phone, delivery_address: address, note });
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
-    const total = product.price_cents * qty;
+    const unit = effectivePriceCents(product.price_cents, product.discount_percent);
+    const total = unit * qty;
     setSubmitting(true);
     try {
       const { data: order, error: orderErr } = await supabase.from("orders").insert({

@@ -22,7 +22,7 @@ export const Route = createFileRoute("/s/$slug/")({
 
 interface Vendor { user_id: string; business_name: string; whatsapp_number: string; slug: string; logo_url: string | null; description: string | null; currency: string; }
 interface Category { id: string; name: string; position: number; }
-interface Product { id: string; category_id: string | null; name: string; description: string | null; price_cents: number; image_url: string | null; stock: number; }
+interface Product { id: string; category_id: string | null; name: string; description: string | null; price_cents: number; image_url: string | null; stock: number; discount_percent: number; }
 
 interface CartItem { product_id: string; name: string; price_cents: number; quantity: number; max: number; }
 

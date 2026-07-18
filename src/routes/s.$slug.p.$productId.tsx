@@ -90,7 +90,7 @@ function SingleProductPage() {
         order_id: order.id,
         product_id: product.id,
         product_name: product.name,
-        unit_price_cents: product.price_cents,
+        unit_price_cents: unit,
         quantity: qty,
       }]);
       if (itemsErr) throw itemsErr;

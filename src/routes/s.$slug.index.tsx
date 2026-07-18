@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Loader2, Minus, Plus, ShoppingCart, MessageCircle, ImageOff, ShoppingBag } from "lucide-react";
-import { formatMoney, waLink } from "@/lib/format";
+import { formatMoney, waLink, effectivePriceCents } from "@/lib/format";
 import { trackEvent } from "@/lib/analytics";
 import { generateTicketBlob, uploadTicket } from "@/lib/ticket";
 import { toast } from "sonner";
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/s/$slug/")({
 
 interface Vendor { user_id: string; business_name: string; whatsapp_number: string; slug: string; logo_url: string | null; description: string | null; currency: string; }
 interface Category { id: string; name: string; position: number; }
-interface Product { id: string; category_id: string | null; name: string; description: string | null; price_cents: number; image_url: string | null; stock: number; }
+interface Product { id: string; category_id: string | null; name: string; description: string | null; price_cents: number; image_url: string | null; stock: number; discount_percent: number; }
 
 interface CartItem { product_id: string; name: string; price_cents: number; quantity: number; max: number; }
 
@@ -150,7 +150,7 @@ function Storefront() {
         if (existing.quantity >= p.stock) { toast.error("Not enough stock"); return prev; }
         return prev.map(c => c.product_id === p.id ? { ...c, quantity: c.quantity + 1 } : c);
       }
-      return [...prev, { product_id: p.id, name: p.name, price_cents: p.price_cents, quantity: 1, max: p.stock }];
+      return [...prev, { product_id: p.id, name: p.name, price_cents: effectivePriceCents(p.price_cents, p.discount_percent), quantity: 1, max: p.stock }];
     });
   }
 
@@ -244,12 +244,20 @@ function Storefront() {
                       <div className="aspect-square bg-muted relative">
                         {p.image_url ? <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><ImageOff className="size-8 text-muted-foreground" /></div>}
                         {p.stock === 0 && <div className="absolute inset-0 bg-background/60 flex items-center justify-center"><Badge variant="destructive">Sold out</Badge></div>}
+                        {p.discount_percent > 0 && p.stock > 0 && (
+                          <Badge className="absolute top-2 left-2 bg-success text-success-foreground shadow-sm">-{p.discount_percent}%</Badge>
+                        )}
                       </div>
                       <div className="p-3">
                         <h3 className="font-medium text-sm leading-tight line-clamp-2">{p.name}</h3>
                         {p.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{p.description}</p>}
                         <div className="mt-2 flex items-center justify-between gap-2">
-                          <span className="font-semibold text-sm">{formatMoney(p.price_cents, vendor.currency)}</span>
+                          <span className="font-semibold text-sm flex items-baseline gap-1.5">
+                            {formatMoney(effectivePriceCents(p.price_cents, p.discount_percent), vendor.currency)}
+                            {p.discount_percent > 0 && (
+                              <span className="text-[10px] font-normal text-muted-foreground line-through">{formatMoney(p.price_cents, vendor.currency)}</span>
+                            )}
+                          </span>
                           <Button size="sm" variant="outline" disabled={p.stock === 0} onClick={(e) => { e.stopPropagation(); addToCart(p); }} className="h-8 px-2.5">
                             <Plus className="size-3.5" />
                           </Button>

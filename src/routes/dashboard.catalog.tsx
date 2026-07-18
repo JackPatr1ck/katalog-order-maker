@@ -15,7 +15,7 @@ import { Loader2, Plus, Pencil, Trash2, ImagePlus, Package, Link as LinkIcon, Sp
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { getMySubscription } from "@/lib/subscription.functions";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, effectivePriceCents } from "@/lib/format";
 import { z } from "zod";
 
 export const Route = createFileRoute("/dashboard/catalog")({
@@ -32,6 +32,7 @@ interface Product {
   image_url: string | null;
   stock: number;
   is_active: boolean;
+  discount_percent: number;
 }
 
 const productSchema = z.object({
@@ -42,6 +43,7 @@ const productSchema = z.object({
   category_id: z.string().uuid().nullable(),
   is_active: z.boolean(),
   image_url: z.string().url().nullable().optional(),
+  discount_percent: z.number().int().min(0).max(95),
 });
 
 function CatalogPage() {
@@ -183,12 +185,23 @@ function CatalogPage() {
                 )}
                 {!p.is_active && <Badge variant="secondary" className="absolute top-2 left-2">Hidden</Badge>}
                 {p.stock === 0 && <Badge variant="destructive" className="absolute top-2 right-2">Out of stock</Badge>}
+                {p.discount_percent > 0 && p.stock > 0 && p.is_active && (
+                  <Badge className="absolute bottom-2 left-2 bg-success text-success-foreground">-{p.discount_percent}%</Badge>
+                )}
               </div>
               <div className="p-4">
                 <div className="flex justify-between items-start gap-2">
                   <div className="min-w-0">
                     <h3 className="font-semibold truncate">{p.name}</h3>
-                    <p className="text-sm text-muted-foreground">{formatMoney(p.price_cents, currency)} · {p.stock} in stock</p>
+                    <p className="text-sm text-muted-foreground">
+                      {p.discount_percent > 0 ? (
+                        <>
+                          <span className="text-foreground font-medium">{formatMoney(effectivePriceCents(p.price_cents, p.discount_percent), currency)}</span>
+                          <span className="line-through ml-1.5">{formatMoney(p.price_cents, currency)}</span>
+                        </>
+                      ) : formatMoney(p.price_cents, currency)}
+                      {" · "}{p.stock} in stock
+                    </p>
                   </div>
                 </div>
                 <div className="flex gap-2 mt-3">
@@ -253,6 +266,7 @@ function ProductDialog({ open, onOpenChange, product, categories, currency, user
   const [categoryId, setCategoryId] = useState<string>("");
   const [isActive, setIsActive] = useState(true);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [discount, setDiscount] = useState("0");
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -265,6 +279,7 @@ function ProductDialog({ open, onOpenChange, product, categories, currency, user
       setCategoryId(product?.category_id ?? "");
       setIsActive(product?.is_active ?? true);
       setImageUrl(product?.image_url ?? null);
+      setDiscount(product?.discount_percent?.toString() ?? "0");
     }
   }, [open, product]);
 
@@ -293,6 +308,7 @@ function ProductDialog({ open, onOpenChange, product, categories, currency, user
       category_id: categoryId || null,
       is_active: isActive,
       image_url: imageUrl,
+      discount_percent: parseInt(discount || "0", 10),
     });
     if (!payload.success) { toast.error(payload.error.issues[0].message); return; }
     setSubmitting(true);
@@ -343,6 +359,28 @@ function ProductDialog({ open, onOpenChange, product, categories, currency, user
               <Label>Stock</Label>
               <Input type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} />
             </div>
+          </div>
+          <div className="space-y-2">
+            <Label>Discount (%)</Label>
+            <Input
+              type="number"
+              min="0"
+              max="95"
+              step="1"
+              value={discount}
+              onChange={(e) => setDiscount(e.target.value)}
+              placeholder="0"
+            />
+            {parseInt(discount || "0", 10) > 0 && parseFloat(price || "0") > 0 && (
+              <p className="text-xs text-muted-foreground">
+                Customers pay{" "}
+                <span className="font-medium text-foreground">
+                  {formatMoney(effectivePriceCents(Math.round(parseFloat(price) * 100), parseInt(discount, 10)), currency)}
+                </span>{" "}
+                instead of{" "}
+                <span className="line-through">{formatMoney(Math.round(parseFloat(price) * 100), currency)}</span>
+              </p>
+            )}
           </div>
           <div className="space-y-2">
             <Label>Category</Label>

@@ -10,6 +10,13 @@ export function formatMoney(cents: number, currency = "USD") {
   }
 }
 
+/** Applies a percent discount (0-100) to a price in cents. */
+export function effectivePriceCents(priceCents: number, discountPercent?: number | null): number {
+  const d = Math.max(0, Math.min(100, discountPercent ?? 0));
+  if (!d) return priceCents;
+  return Math.round(priceCents * (100 - d) / 100);
+}
+
 export function slugify(s: string) {
   return s
     .toLowerCase()

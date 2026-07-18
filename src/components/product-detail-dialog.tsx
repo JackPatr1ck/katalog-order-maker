@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ImageOff, Loader2, Plus, Star } from "lucide-react";
 import { toast } from "sonner";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, effectivePriceCents } from "@/lib/format";
 import { z } from "zod";
 
 export interface ProductDetailProduct {
@@ -20,6 +20,7 @@ export interface ProductDetailProduct {
   price_cents: number;
   image_url: string | null;
   stock: number;
+  discount_percent?: number;
 }
 
 interface Review {
@@ -124,7 +125,15 @@ export function ProductDetailDialog({
                 {reviews.length ? `${avg.toFixed(1)} · ${reviews.length} review${reviews.length > 1 ? "s" : ""}` : "No reviews yet"}
               </span>
             </div>
-            <p className="text-2xl font-bold font-display">{formatMoney(product.price_cents, currency)}</p>
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <p className="text-2xl font-bold font-display">{formatMoney(effectivePriceCents(product.price_cents, product.discount_percent), currency)}</p>
+              {product.discount_percent && product.discount_percent > 0 ? (
+                <>
+                  <span className="text-sm text-muted-foreground line-through">{formatMoney(product.price_cents, currency)}</span>
+                  <Badge className="bg-success text-success-foreground">-{product.discount_percent}%</Badge>
+                </>
+              ) : null}
+            </div>
             {product.stock === 0 ? (
               <Badge variant="destructive">Sold out</Badge>
             ) : (

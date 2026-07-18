@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Minus, Plus, MessageCircle, ImageOff, ShoppingBag, ArrowLeft } from "lucide-react";
-import { formatMoney, waLink } from "@/lib/format";
+import { formatMoney, waLink, effectivePriceCents } from "@/lib/format";
 import { trackEvent } from "@/lib/analytics";
 import { generateTicketBlob, uploadTicket } from "@/lib/ticket";
 import { toast } from "sonner";
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/s/$slug/p/$productId")({
 });
 
 interface Vendor { user_id: string; business_name: string; whatsapp_number: string; slug: string; logo_url: string | null; description: string | null; currency: string; }
-interface Product { id: string; vendor_id: string; name: string; description: string | null; price_cents: number; image_url: string | null; stock: number; is_active: boolean; }
+interface Product { id: string; vendor_id: string; name: string; description: string | null; price_cents: number; image_url: string | null; stock: number; is_active: boolean; discount_percent: number; }
 
 const checkoutSchema = z.object({
   customer_name: z.string().trim().min(1).max(100),
@@ -71,7 +71,8 @@ function SingleProductPage() {
     if (!vendor || !product) return;
     const parsed = checkoutSchema.safeParse({ customer_name: name, customer_phone: phone, delivery_address: address, note });
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
-    const total = product.price_cents * qty;
+    const unit = effectivePriceCents(product.price_cents, product.discount_percent);
+    const total = unit * qty;
     setSubmitting(true);
     try {
       const { data: order, error: orderErr } = await supabase.from("orders").insert({
@@ -89,7 +90,7 @@ function SingleProductPage() {
         order_id: order.id,
         product_id: product.id,
         product_name: product.name,
-        unit_price_cents: product.price_cents,
+        unit_price_cents: unit,
         quantity: qty,
       }]);
       if (itemsErr) throw itemsErr;
@@ -103,7 +104,7 @@ function SingleProductPage() {
           customerPhone: parsed.data.customer_phone,
           address: parsed.data.delivery_address,
           note: parsed.data.note ?? null,
-          items: [{ name: product.name, quantity: qty, price_cents: product.price_cents }],
+          items: [{ name: product.name, quantity: qty, price_cents: unit }],
           totalCents: total,
           currency: vendor.currency,
         });
@@ -157,7 +158,8 @@ function SingleProductPage() {
     );
   }
 
-  const total = product.price_cents * qty;
+  const unitPrice = effectivePriceCents(product.price_cents, product.discount_percent);
+  const total = unitPrice * qty;
 
   return (
     <div className="min-h-screen bg-subtle pb-12">
@@ -192,7 +194,15 @@ function SingleProductPage() {
             </div>
             <div className="p-6 space-y-4">
               <h1 className="font-display text-2xl font-bold">{product.name}</h1>
-              <p className="text-3xl font-bold font-display">{formatMoney(product.price_cents, vendor.currency)}</p>
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <p className="text-3xl font-bold font-display">{formatMoney(unitPrice, vendor.currency)}</p>
+                {product.discount_percent > 0 && (
+                  <>
+                    <span className="text-base text-muted-foreground line-through">{formatMoney(product.price_cents, vendor.currency)}</span>
+                    <Badge className="bg-success text-success-foreground">-{product.discount_percent}%</Badge>
+                  </>
+                )}
+              </div>
               {product.stock === 0 ? (
                 <Badge variant="destructive">Sold out</Badge>
               ) : (

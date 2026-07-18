@@ -185,12 +185,23 @@ function CatalogPage() {
                 )}
                 {!p.is_active && <Badge variant="secondary" className="absolute top-2 left-2">Hidden</Badge>}
                 {p.stock === 0 && <Badge variant="destructive" className="absolute top-2 right-2">Out of stock</Badge>}
+                {p.discount_percent > 0 && p.stock > 0 && p.is_active && (
+                  <Badge className="absolute bottom-2 left-2 bg-success text-success-foreground">-{p.discount_percent}%</Badge>
+                )}
               </div>
               <div className="p-4">
                 <div className="flex justify-between items-start gap-2">
                   <div className="min-w-0">
                     <h3 className="font-semibold truncate">{p.name}</h3>
-                    <p className="text-sm text-muted-foreground">{formatMoney(p.price_cents, currency)} · {p.stock} in stock</p>
+                    <p className="text-sm text-muted-foreground">
+                      {p.discount_percent > 0 ? (
+                        <>
+                          <span className="text-foreground font-medium">{formatMoney(effectivePriceCents(p.price_cents, p.discount_percent), currency)}</span>
+                          <span className="line-through ml-1.5">{formatMoney(p.price_cents, currency)}</span>
+                        </>
+                      ) : formatMoney(p.price_cents, currency)}
+                      {" · "}{p.stock} in stock
+                    </p>
                   </div>
                 </div>
                 <div className="flex gap-2 mt-3">

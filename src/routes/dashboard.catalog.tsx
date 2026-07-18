@@ -266,6 +266,7 @@ function ProductDialog({ open, onOpenChange, product, categories, currency, user
   const [categoryId, setCategoryId] = useState<string>("");
   const [isActive, setIsActive] = useState(true);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [discount, setDiscount] = useState("0");
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -278,6 +279,7 @@ function ProductDialog({ open, onOpenChange, product, categories, currency, user
       setCategoryId(product?.category_id ?? "");
       setIsActive(product?.is_active ?? true);
       setImageUrl(product?.image_url ?? null);
+      setDiscount(product?.discount_percent?.toString() ?? "0");
     }
   }, [open, product]);
 
@@ -306,6 +308,7 @@ function ProductDialog({ open, onOpenChange, product, categories, currency, user
       category_id: categoryId || null,
       is_active: isActive,
       image_url: imageUrl,
+      discount_percent: parseInt(discount || "0", 10),
     });
     if (!payload.success) { toast.error(payload.error.issues[0].message); return; }
     setSubmitting(true);

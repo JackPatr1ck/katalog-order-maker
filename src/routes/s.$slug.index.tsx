@@ -150,7 +150,7 @@ function Storefront() {
         if (existing.quantity >= p.stock) { toast.error("Not enough stock"); return prev; }
         return prev.map(c => c.product_id === p.id ? { ...c, quantity: c.quantity + 1 } : c);
       }
-      return [...prev, { product_id: p.id, name: p.name, price_cents: p.price_cents, quantity: 1, max: p.stock }];
+      return [...prev, { product_id: p.id, name: p.name, price_cents: effectivePriceCents(p.price_cents, p.discount_percent), quantity: 1, max: p.stock }];
     });
   }
 

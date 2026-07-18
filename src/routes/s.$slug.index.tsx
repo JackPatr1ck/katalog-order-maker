@@ -244,12 +244,20 @@ function Storefront() {
                       <div className="aspect-square bg-muted relative">
                         {p.image_url ? <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><ImageOff className="size-8 text-muted-foreground" /></div>}
                         {p.stock === 0 && <div className="absolute inset-0 bg-background/60 flex items-center justify-center"><Badge variant="destructive">Sold out</Badge></div>}
+                        {p.discount_percent > 0 && p.stock > 0 && (
+                          <Badge className="absolute top-2 left-2 bg-success text-success-foreground shadow-sm">-{p.discount_percent}%</Badge>
+                        )}
                       </div>
                       <div className="p-3">
                         <h3 className="font-medium text-sm leading-tight line-clamp-2">{p.name}</h3>
                         {p.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{p.description}</p>}
                         <div className="mt-2 flex items-center justify-between gap-2">
-                          <span className="font-semibold text-sm">{formatMoney(p.price_cents, vendor.currency)}</span>
+                          <span className="font-semibold text-sm flex items-baseline gap-1.5">
+                            {formatMoney(effectivePriceCents(p.price_cents, p.discount_percent), vendor.currency)}
+                            {p.discount_percent > 0 && (
+                              <span className="text-[10px] font-normal text-muted-foreground line-through">{formatMoney(p.price_cents, vendor.currency)}</span>
+                            )}
+                          </span>
                           <Button size="sm" variant="outline" disabled={p.stock === 0} onClick={(e) => { e.stopPropagation(); addToCart(p); }} className="h-8 px-2.5">
                             <Plus className="size-3.5" />
                           </Button>

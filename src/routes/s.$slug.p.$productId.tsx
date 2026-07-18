@@ -158,7 +158,8 @@ function SingleProductPage() {
     );
   }
 
-  const total = product.price_cents * qty;
+  const unitPrice = effectivePriceCents(product.price_cents, product.discount_percent);
+  const total = unitPrice * qty;
 
   return (
     <div className="min-h-screen bg-subtle pb-12">

@@ -19,7 +19,7 @@ export const Route = createFileRoute("/s/$slug/p/$productId")({
 });
 
 interface Vendor { user_id: string; business_name: string; whatsapp_number: string; slug: string; logo_url: string | null; description: string | null; currency: string; }
-interface Product { id: string; vendor_id: string; name: string; description: string | null; price_cents: number; image_url: string | null; stock: number; is_active: boolean; }
+interface Product { id: string; vendor_id: string; name: string; description: string | null; price_cents: number; image_url: string | null; stock: number; is_active: boolean; discount_percent: number; }
 
 const checkoutSchema = z.object({
   customer_name: z.string().trim().min(1).max(100),

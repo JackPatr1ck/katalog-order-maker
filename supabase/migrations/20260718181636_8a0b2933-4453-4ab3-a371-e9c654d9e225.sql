@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN discount_percent integer NOT NULL DEFAULT 0 CHECK (discount_percent >= 0 AND discount_percent <= 95);

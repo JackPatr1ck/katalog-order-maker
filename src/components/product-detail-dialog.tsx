@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ImageOff, Loader2, Plus, Star } from "lucide-react";
 import { toast } from "sonner";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, effectivePriceCents } from "@/lib/format";
 import { z } from "zod";
 
 export interface ProductDetailProduct {
@@ -20,6 +20,7 @@ export interface ProductDetailProduct {
   price_cents: number;
   image_url: string | null;
   stock: number;
+  discount_percent?: number;
 }
 
 interface Review {

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Minus, Plus, MessageCircle, ImageOff, ShoppingBag, ArrowLeft } from "lucide-react";
-import { formatMoney, waLink } from "@/lib/format";
+import { formatMoney, waLink, effectivePriceCents } from "@/lib/format";
 import { trackEvent } from "@/lib/analytics";
 import { generateTicketBlob, uploadTicket } from "@/lib/ticket";
 import { toast } from "sonner";

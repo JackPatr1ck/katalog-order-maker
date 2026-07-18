@@ -15,7 +15,7 @@ import { Loader2, Plus, Pencil, Trash2, ImagePlus, Package, Link as LinkIcon, Sp
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { getMySubscription } from "@/lib/subscription.functions";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, effectivePriceCents } from "@/lib/format";
 import { z } from "zod";
 
 export const Route = createFileRoute("/dashboard/catalog")({

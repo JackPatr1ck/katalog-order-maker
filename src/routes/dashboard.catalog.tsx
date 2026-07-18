@@ -361,6 +361,28 @@ function ProductDialog({ open, onOpenChange, product, categories, currency, user
             </div>
           </div>
           <div className="space-y-2">
+            <Label>Discount (%)</Label>
+            <Input
+              type="number"
+              min="0"
+              max="95"
+              step="1"
+              value={discount}
+              onChange={(e) => setDiscount(e.target.value)}
+              placeholder="0"
+            />
+            {parseInt(discount || "0", 10) > 0 && parseFloat(price || "0") > 0 && (
+              <p className="text-xs text-muted-foreground">
+                Customers pay{" "}
+                <span className="font-medium text-foreground">
+                  {formatMoney(effectivePriceCents(Math.round(parseFloat(price) * 100), parseInt(discount, 10)), currency)}
+                </span>{" "}
+                instead of{" "}
+                <span className="line-through">{formatMoney(Math.round(parseFloat(price) * 100), currency)}</span>
+              </p>
+            )}
+          </div>
+          <div className="space-y-2">
             <Label>Category</Label>
             <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm">
               <option value="">— Uncategorised —</option>

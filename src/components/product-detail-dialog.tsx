@@ -125,7 +125,15 @@ export function ProductDetailDialog({
                 {reviews.length ? `${avg.toFixed(1)} · ${reviews.length} review${reviews.length > 1 ? "s" : ""}` : "No reviews yet"}
               </span>
             </div>
-            <p className="text-2xl font-bold font-display">{formatMoney(product.price_cents, currency)}</p>
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <p className="text-2xl font-bold font-display">{formatMoney(effectivePriceCents(product.price_cents, product.discount_percent), currency)}</p>
+              {product.discount_percent && product.discount_percent > 0 ? (
+                <>
+                  <span className="text-sm text-muted-foreground line-through">{formatMoney(product.price_cents, currency)}</span>
+                  <Badge className="bg-success text-success-foreground">-{product.discount_percent}%</Badge>
+                </>
+              ) : null}
+            </div>
             {product.stock === 0 ? (
               <Badge variant="destructive">Sold out</Badge>
             ) : (

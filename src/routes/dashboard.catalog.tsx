@@ -32,6 +32,7 @@ interface Product {
   image_url: string | null;
   stock: number;
   is_active: boolean;
+  discount_percent: number;
 }
 
 const productSchema = z.object({
@@ -42,6 +43,7 @@ const productSchema = z.object({
   category_id: z.string().uuid().nullable(),
   is_active: z.boolean(),
   image_url: z.string().url().nullable().optional(),
+  discount_percent: z.number().int().min(0).max(95),
 });
 
 function CatalogPage() {

@@ -104,7 +104,7 @@ function SingleProductPage() {
           customerPhone: parsed.data.customer_phone,
           address: parsed.data.delivery_address,
           note: parsed.data.note ?? null,
-          items: [{ name: product.name, quantity: qty, price_cents: product.price_cents }],
+          items: [{ name: product.name, quantity: qty, price_cents: unit }],
           totalCents: total,
           currency: vendor.currency,
         });

@@ -194,7 +194,15 @@ function SingleProductPage() {
             </div>
             <div className="p-6 space-y-4">
               <h1 className="font-display text-2xl font-bold">{product.name}</h1>
-              <p className="text-3xl font-bold font-display">{formatMoney(product.price_cents, vendor.currency)}</p>
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <p className="text-3xl font-bold font-display">{formatMoney(unitPrice, vendor.currency)}</p>
+                {product.discount_percent > 0 && (
+                  <>
+                    <span className="text-base text-muted-foreground line-through">{formatMoney(product.price_cents, vendor.currency)}</span>
+                    <Badge className="bg-success text-success-foreground">-{product.discount_percent}%</Badge>
+                  </>
+                )}
+              </div>
               {product.stock === 0 ? (
                 <Badge variant="destructive">Sold out</Badge>
               ) : (

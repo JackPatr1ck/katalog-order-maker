@@ -70,22 +70,47 @@ function Onboarding() {
     }
     setSubmitting(true);
     try {
+      // Make sure we still have a live session — RLS needs auth.uid()
+      const { data: authData, error: authErr } = await supabase.auth.getUser();
+      if (authErr || !authData.user) {
+        toast.error("Your session expired. Please sign in again.");
+        navigate({ to: "/auth" });
+        return;
+      }
+
       const { error } = await supabase.from("vendor_profiles").insert({
-        user_id: user.id,
+        user_id: authData.user.id,
         ...parsed.data,
       });
       if (error) {
-        if (error.code === "23505") throw new Error("That shop URL is taken — try another");
-        throw error;
+        if (error.code === "23505") {
+          throw new Error(
+            error.message.includes("pkey")
+              ? "You already have a shop — taking you to your dashboard."
+              : "That shop URL is taken — try another",
+          );
+        }
+        if (error.code === "42501") {
+          throw new Error("Permission denied saving your shop. Please sign out and sign in again.");
+        }
+        throw new Error(error.message || "Could not save profile");
       }
       toast.success("Shop created! 🎉");
       navigate({ to: "/dashboard" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not save profile");
+      const msg =
+        err instanceof Error
+          ? err.message
+          : typeof err === "object" && err && "message" in err
+            ? String((err as { message: unknown }).message)
+            : "Could not save profile";
+      toast.error(msg);
+      if (msg.startsWith("You already have a shop")) navigate({ to: "/dashboard" });
     } finally {
       setSubmitting(false);
     }
   };
+
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin" /></div>;
 

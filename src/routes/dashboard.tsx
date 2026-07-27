@@ -12,8 +12,6 @@ import {
   LogOut,
   ExternalLink,
   Copy,
-  Receipt,
-  Download,
   BarChart3,
   ShieldAlert,
   Wallet,
@@ -23,7 +21,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { formatMoney } from "@/lib/format";

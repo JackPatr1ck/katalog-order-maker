@@ -320,9 +320,6 @@ function DashboardLayout() {
             </p>
             <NavList />
           </div>
-          <div className="border-t border-border pt-6">
-            <OrdersList />
-          </div>
         </div>
 
         <div className="p-5 border-t border-border space-y-2">
@@ -377,9 +374,6 @@ function DashboardLayout() {
                     Workspace
                   </p>
                   <NavList onNavigate={() => setMenuOpen(false)} />
-                </div>
-                <div className="border-t border-border pt-5">
-                  <OrdersList onSelect={() => setMenuOpen(false)} />
                 </div>
               </div>
               <div className="p-4 border-t border-border">

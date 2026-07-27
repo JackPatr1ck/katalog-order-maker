@@ -59,17 +59,8 @@ export const Route = createFileRoute('/api/public/paystack/webhook')({
                 },
                 { onConflict: 'user_id' },
               );
-          } else {
-            await supabaseAdmin
-              .from('orders')
-              .update({
-                status: 'paid',
-                paid_at: event.data.paid_at ?? new Date().toISOString(),
-                amount_paid_cents: event.data.amount ?? null,
-              })
-              .eq('payment_reference', event.data.reference)
-              .is('paid_at', null);
           }
+
         }
 
         return new Response('ok');

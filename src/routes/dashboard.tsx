@@ -23,8 +23,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { formatMoney } from "@/lib/format";
 import { toast } from "sonner";
-import { useServerFn } from "@tanstack/react-start";
-import { generatePaymentLink } from "@/lib/payments.functions";
 import platformLogo from "@/assets/logo.png";
 import storefrontPlaceholder from "@/assets/storefront-placeholder.png";
 

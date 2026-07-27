@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, useNavigate, Link, useLocation } from "@tanstack/react-router";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, createContext, useContext } from "react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -12,8 +12,6 @@ import {
   LogOut,
   ExternalLink,
   Copy,
-  Receipt,
-  Download,
   BarChart3,
   ShieldAlert,
   Wallet,
@@ -23,7 +21,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { formatMoney } from "@/lib/format";
@@ -43,7 +40,7 @@ export interface VendorProfile {
   currency: string;
 }
 
-interface OrderRow {
+export interface OrderRow {
   id: string;
   order_number: number;
   customer_name: string;
@@ -77,6 +74,18 @@ const PAGE_TITLES: Record<string, string> = {
   "/dashboard/settings": "Profile",
   "/dashboard/settings/payouts": "Payouts",
 };
+
+interface OrderContextValue {
+  orders: OrderRow[];
+  openOrder: (o: OrderRow) => void;
+}
+
+export const DashboardOrderContext = createContext<OrderContextValue | null>(null);
+export function useDashboardOrders() {
+  const ctx = useContext(DashboardOrderContext);
+  if (!ctx) throw new Error("useDashboardOrders must be used within DashboardLayout");
+  return ctx;
+}
 
 function DashboardLayout() {
   const { user, loading, signOut } = useAuth();
@@ -219,31 +228,6 @@ function DashboardLayout() {
     setItems((data ?? []) as OrderItemRow[]);
   }
 
-  function exportCSV() {
-    if (!orders.length) return;
-    const headers = ["Order #", "Date", "Customer", "Phone", "Address", "Total", "Status", "Note"];
-    const rows = orders.map((o) => [
-      o.order_number,
-      new Date(o.created_at).toISOString(),
-      o.customer_name,
-      o.customer_phone,
-      o.delivery_address.replace(/\n/g, " "),
-      (o.total_cents / 100).toFixed(2),
-      o.status,
-      (o.note ?? "").replace(/\n/g, " "),
-    ]);
-    const csv = [headers, ...rows]
-      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
-      .join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `katalog-orders-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
   const NavList = ({ onNavigate }: { onNavigate?: () => void }) => (
     <nav className="space-y-1">
       {navItems.map((item) => {
@@ -282,60 +266,6 @@ function DashboardLayout() {
     </nav>
   );
 
-  const OrdersList = ({ onSelect }: { onSelect?: () => void }) => (
-    <div>
-      <div className="flex items-center justify-between px-3 mb-3">
-        <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-muted-foreground">
-          Recent Orders
-        </p>
-        {orders.length > 0 && (
-          <button
-            onClick={exportCSV}
-            className="text-primary text-[11px] font-medium inline-flex items-center gap-1 hover:underline"
-            aria-label="Export orders"
-          >
-            <Download className="size-3" /> CSV
-          </button>
-        )}
-      </div>
-      {orders.length === 0 ? (
-        <div className="px-3 py-6 text-center">
-          <Receipt className="size-5 text-muted-foreground mx-auto mb-2" />
-          <p className="text-xs text-muted-foreground">No orders yet</p>
-        </div>
-      ) : (
-        <ul className="space-y-0.5">
-          {orders.map((o) => (
-            <li key={o.id}>
-              <button
-                onClick={() => {
-                  void openOrder(o);
-                  onSelect?.();
-                }}
-                className="w-full flex items-center justify-between gap-2 text-left px-3 py-2 rounded-lg hover:bg-accent/40 transition-colors group"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-medium group-hover:text-primary transition-colors">
-                    #{o.order_number} · {formatMoney(o.total_cents, profile.currency)}
-                  </p>
-                  <p className="text-[11px] text-muted-foreground truncate">
-                    {o.customer_name}
-                  </p>
-                </div>
-                <Badge
-                  variant="secondary"
-                  className="text-[9px] capitalize shrink-0 bg-accent text-accent-foreground hover:bg-accent px-1.5 py-0"
-                >
-                  {o.status}
-                </Badge>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-background flex flex-col lg:flex-row">
       {/* Desktop sidebar */}
@@ -364,9 +294,6 @@ function DashboardLayout() {
               Workspace
             </p>
             <NavList />
-          </div>
-          <div className="border-t border-border pt-6">
-            <OrdersList />
           </div>
         </div>
 
@@ -422,9 +349,6 @@ function DashboardLayout() {
                     Workspace
                   </p>
                   <NavList onNavigate={() => setMenuOpen(false)} />
-                </div>
-                <div className="border-t border-border pt-5">
-                  <OrdersList onSelect={() => setMenuOpen(false)} />
                 </div>
               </div>
               <div className="p-4 border-t border-border">
@@ -502,7 +426,9 @@ function DashboardLayout() {
 
 
         <div className="max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 py-6 lg:py-12">
-          <Outlet />
+          <DashboardOrderContext.Provider value={{ orders, openOrder }}>
+            <Outlet />
+          </DashboardOrderContext.Provider>
         </div>
       </main>
 

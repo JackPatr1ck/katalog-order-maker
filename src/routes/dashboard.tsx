@@ -228,31 +228,6 @@ function DashboardLayout() {
     setItems((data ?? []) as OrderItemRow[]);
   }
 
-  function exportCSV() {
-    if (!orders.length) return;
-    const headers = ["Order #", "Date", "Customer", "Phone", "Address", "Total", "Status", "Note"];
-    const rows = orders.map((o) => [
-      o.order_number,
-      new Date(o.created_at).toISOString(),
-      o.customer_name,
-      o.customer_phone,
-      o.delivery_address.replace(/\n/g, " "),
-      (o.total_cents / 100).toFixed(2),
-      o.status,
-      (o.note ?? "").replace(/\n/g, " "),
-    ]);
-    const csv = [headers, ...rows]
-      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
-      .join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `katalog-orders-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
   const NavList = ({ onNavigate }: { onNavigate?: () => void }) => (
     <nav className="space-y-1">
       {navItems.map((item) => {

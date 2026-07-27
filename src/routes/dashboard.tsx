@@ -451,7 +451,9 @@ function DashboardLayout() {
 
 
         <div className="max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 py-6 lg:py-12">
-          <Outlet />
+          <DashboardOrderContext.Provider value={{ orders, openOrder }}>
+            <Outlet />
+          </DashboardOrderContext.Provider>
         </div>
       </main>
 

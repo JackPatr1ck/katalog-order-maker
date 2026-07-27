@@ -40,7 +40,7 @@ export interface VendorProfile {
   currency: string;
 }
 
-interface OrderRow {
+export interface OrderRow {
   id: string;
   order_number: number;
   customer_name: string;
@@ -74,6 +74,18 @@ const PAGE_TITLES: Record<string, string> = {
   "/dashboard/settings": "Profile",
   "/dashboard/settings/payouts": "Payouts",
 };
+
+interface OrderContextValue {
+  orders: OrderRow[];
+  openOrder: (o: OrderRow) => void;
+}
+
+export const DashboardOrderContext = createContext<OrderContextValue | null>(null);
+export function useDashboardOrders() {
+  const ctx = useContext(DashboardOrderContext);
+  if (!ctx) throw new Error("useDashboardOrders must be used within DashboardLayout");
+  return ctx;
+}
 
 function DashboardLayout() {
   const { user, loading, signOut } = useAuth();

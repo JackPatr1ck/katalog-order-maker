@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, Copy, ExternalLink, Upload, Trash2, ImageOff, Wallet, ArrowRight, Sparkles } from "lucide-react";
+import { Loader2, Copy, ExternalLink, Upload, Trash2, ImageOff, ArrowRight, Sparkles } from "lucide-react";
 import { z } from "zod";
 import { normalizeWhatsApp, slugify } from "@/lib/format";
 

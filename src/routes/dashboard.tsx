@@ -291,60 +291,6 @@ function DashboardLayout() {
     </nav>
   );
 
-  const OrdersList = ({ onSelect }: { onSelect?: () => void }) => (
-    <div>
-      <div className="flex items-center justify-between px-3 mb-3">
-        <p className="text-[10px] font-semibold tracking-[0.15em] uppercase text-muted-foreground">
-          Recent Orders
-        </p>
-        {orders.length > 0 && (
-          <button
-            onClick={exportCSV}
-            className="text-primary text-[11px] font-medium inline-flex items-center gap-1 hover:underline"
-            aria-label="Export orders"
-          >
-            <Download className="size-3" /> CSV
-          </button>
-        )}
-      </div>
-      {orders.length === 0 ? (
-        <div className="px-3 py-6 text-center">
-          <Receipt className="size-5 text-muted-foreground mx-auto mb-2" />
-          <p className="text-xs text-muted-foreground">No orders yet</p>
-        </div>
-      ) : (
-        <ul className="space-y-0.5">
-          {orders.map((o) => (
-            <li key={o.id}>
-              <button
-                onClick={() => {
-                  void openOrder(o);
-                  onSelect?.();
-                }}
-                className="w-full flex items-center justify-between gap-2 text-left px-3 py-2 rounded-lg hover:bg-accent/40 transition-colors group"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-medium group-hover:text-primary transition-colors">
-                    #{o.order_number} · {formatMoney(o.total_cents, profile.currency)}
-                  </p>
-                  <p className="text-[11px] text-muted-foreground truncate">
-                    {o.customer_name}
-                  </p>
-                </div>
-                <Badge
-                  variant="secondary"
-                  className="text-[9px] capitalize shrink-0 bg-accent text-accent-foreground hover:bg-accent px-1.5 py-0"
-                >
-                  {o.status}
-                </Badge>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-background flex flex-col lg:flex-row">
       {/* Desktop sidebar */}

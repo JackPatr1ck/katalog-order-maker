@@ -14,8 +14,6 @@ import {
   Copy,
   BarChart3,
   ShieldAlert,
-  Wallet,
-  Link2,
   Bell,
   CheckCheck,
 } from "lucide-react";

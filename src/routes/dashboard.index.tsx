@@ -4,9 +4,19 @@ import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Copy, Package2, Plus, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Loader2,
+  Copy,
+  Package2,
+  Plus,
+  ArrowRight,
+  Receipt,
+  Download,
+} from "lucide-react";
 import { formatMoney } from "@/lib/format";
 import { toast } from "sonner";
+import { useDashboardOrders, type OrderRow } from "./dashboard";
 
 export const Route = createFileRoute("/dashboard/")({
   component: DashboardHome,
@@ -22,6 +32,7 @@ interface Product {
 
 function DashboardHome() {
   const { user } = useAuth();
+  const { orders, openOrder } = useDashboardOrders();
   const [loading, setLoading] = useState(true);
   const [businessName, setBusinessName] = useState("");
   const [slug, setSlug] = useState("");
@@ -56,6 +67,31 @@ function DashboardHome() {
     }
     setProducts((prods ?? []) as Product[]);
     setLoading(false);
+  }
+
+  function exportCSV() {
+    if (!orders.length) return;
+    const headers = ["Order #", "Date", "Customer", "Phone", "Address", "Total", "Status", "Note"];
+    const rows = orders.map((o) => [
+      o.order_number,
+      new Date(o.created_at).toISOString(),
+      o.customer_name,
+      o.customer_phone,
+      o.delivery_address.replace(/\n/g, " "),
+      (o.total_cents / 100).toFixed(2),
+      o.status,
+      (o.note ?? "").replace(/\n/g, " "),
+    ]);
+    const csv = [headers, ...rows]
+      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `katalog-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   if (loading) {
@@ -187,6 +223,64 @@ function DashboardHome() {
                     : `${p.stock} in stock`}
                 </span>
               </Link>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Orders */}
+      <section>
+        <div className="flex items-end justify-between mb-5">
+          <h2 className="font-display text-xl font-semibold">Recent Orders</h2>
+          {orders.length > 0 && (
+            <button
+              onClick={exportCSV}
+              className="text-primary text-sm font-medium inline-flex items-center gap-1 hover:underline"
+              aria-label="Export orders"
+            >
+              <Download className="size-4" /> CSV
+            </button>
+          )}
+        </div>
+
+        {orders.length === 0 ? (
+          <Card className="p-8 text-center">
+            <div className="mx-auto size-12 rounded-2xl bg-accent flex items-center justify-center mb-4">
+              <Receipt className="size-5 text-primary" />
+            </div>
+            <h3 className="font-display text-base font-semibold">No orders yet</h3>
+            <p className="text-muted-foreground text-sm mt-1.5 max-w-xs mx-auto">
+              Orders will appear here once customers start buying.
+            </p>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {orders.map((o) => (
+              <button
+                key={o.id}
+                onClick={() => openOrder(o)}
+                className="flex items-center justify-between gap-3 group p-4 rounded-lg border border-border hover:bg-accent/30 transition-colors text-left"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-sm truncate group-hover:text-primary transition-colors">
+                    #{o.order_number} · {o.customer_name}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {new Date(o.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="font-medium text-sm">
+                    {formatMoney(o.total_cents, currency)}
+                  </span>
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] capitalize bg-accent text-accent-foreground hover:bg-accent px-2 py-0.5"
+                  >
+                    {o.status}
+                  </Badge>
+                </div>
+              </button>
             ))}
           </div>
         )}

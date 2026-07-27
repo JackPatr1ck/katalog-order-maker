@@ -46,9 +46,6 @@ export interface OrderRow {
   total_cents: number;
   status: string;
   created_at: string;
-  payment_reference: string | null;
-  payment_link_expires_at: string | null;
-  paid_at: string | null;
 }
 
 interface OrderItemRow {

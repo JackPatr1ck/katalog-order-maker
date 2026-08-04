@@ -341,15 +341,13 @@ function Landing() {
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {[
-                { name: "Starter", monthly: 0, annual: 0, originalMonthly: null, originalAnnual: null, features: ["Up to 5 products", "1 shareable link", "WhatsApp checkout", "Basic analytics"], cta: "Get started", featured: false, badge: null },
-                { name: "Hustler", monthly: 1047, annual: 10470, originalMonthly: 3490, originalAnnual: 34900, features: ["Unlimited products", "1 shareable link", "Advanced analytics", "Order CSV export", "Priority support"], cta: "Get started", featured: true, badge: "70% off — first 1,000 vendors" },
-                { name: "Business", monthly: 12000, annual: 120000, originalMonthly: null, originalAnnual: null, features: ["Multiple staff seats", "Bulk pricing tiers", "API access", "Dedicated success manager"], cta: "Contact sales", featured: false, badge: null },
+                { name: "Starter", monthly: 0, annual: 0, features: ["Up to 5 products", "1 shareable link", "WhatsApp checkout", "Basic analytics"], cta: "Get started", featured: false, badge: null },
+                { name: "Hustler", monthly: 990, annual: 9900, features: ["Unlimited products", "1 shareable link", "Advanced analytics", "Order CSV export", "Priority support"], cta: "Get started", featured: true, badge: null },
+                { name: "Business", monthly: 12000, annual: 120000, features: ["Multiple staff seats", "Bulk pricing tiers", "API access", "Dedicated success manager"], cta: "Contact sales", featured: false, badge: null },
               ].map((p) => {
                 const amount = billing === "monthly" ? p.monthly : p.annual;
-                const original = billing === "monthly" ? p.originalMonthly : p.originalAnnual;
                 const period = p.monthly === 0 ? "free forever" : billing === "monthly" ? "per month" : "per year";
                 const priceLabel = p.monthly === 0 ? "₦0" : `₦${amount.toLocaleString()}`;
-                const originalLabel = original ? `₦${original.toLocaleString()}` : null;
                 return (
                 <div key={p.name} className={`relative p-7 rounded-2xl border ${p.featured ? "bg-foreground text-background border-foreground shadow-elegant" : "bg-card border-border"}`}>
                   {p.featured && (
@@ -358,9 +356,6 @@ function Landing() {
                   <h3 className="font-display text-xl font-semibold">{p.name}</h3>
                   <div className="mt-3 flex items-baseline gap-2 flex-wrap">
                     <span className="font-display text-4xl font-bold">{priceLabel}</span>
-                    {originalLabel && (
-                      <span className={`text-lg line-through ${p.featured ? "text-background/40" : "text-muted-foreground/60"}`}>{originalLabel}</span>
-                    )}
                     <span className={`text-sm ${p.featured ? "text-background/60" : "text-muted-foreground"}`}>{period}</span>
                   </div>
                   {p.badge && (

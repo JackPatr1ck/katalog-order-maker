@@ -29,14 +29,12 @@ const PLANS = [
   {
     id: "hustler" as const,
     name: "Hustler",
-    monthly: 1047,
-    annual: 10470,
-    originalMonthly: 3490,
-    originalAnnual: 34900,
+    monthly: 990,
+    annual: 9900,
     features: ["Unlimited products", "Advanced analytics", "Order CSV export", "Priority support"],
     cta: "Upgrade",
     featured: true,
-    badge: "70% off — first 1,000 vendors",
+    badge: null,
     contact: false,
   },
   {

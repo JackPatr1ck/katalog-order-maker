@@ -356,9 +356,6 @@ function Landing() {
                   <h3 className="font-display text-xl font-semibold">{p.name}</h3>
                   <div className="mt-3 flex items-baseline gap-2 flex-wrap">
                     <span className="font-display text-4xl font-bold">{priceLabel}</span>
-                    {originalLabel && (
-                      <span className={`text-lg line-through ${p.featured ? "text-background/40" : "text-muted-foreground/60"}`}>{originalLabel}</span>
-                    )}
                     <span className={`text-sm ${p.featured ? "text-background/60" : "text-muted-foreground"}`}>{period}</span>
                   </div>
                   {p.badge && (

@@ -464,6 +464,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      order_exists: { Args: { _order_id: string }; Returns: boolean }
+      product_was_ordered: { Args: { _product_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "vendor"

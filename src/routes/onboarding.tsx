@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { toast } from "sonner";
 import { Loader2, ShoppingBag } from "lucide-react";
 import { slugify, normalizeWhatsApp } from "@/lib/format";
+import { COUNTRIES, currencyForCountry, countryName, dialForCountry } from "@/lib/countries";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
@@ -25,8 +26,6 @@ const profileSchema = z.object({
   currency: z.string().length(3),
 });
 
-const CURRENCIES = ["USD", "EUR", "GBP", "NGN", "KES", "GHS", "ZAR", "INR", "BRL", "MXN"];
-
 function Onboarding() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -34,9 +33,11 @@ function Onboarding() {
   const [whatsapp, setWhatsapp] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
-  const [currency, setCurrency] = useState("USD");
+  const [country, setCountry] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const currency = currencyForCountry(country);
 
   useEffect(() => {
     if (loading) return;
@@ -44,6 +45,10 @@ function Onboarding() {
       navigate({ to: "/auth" });
       return;
     }
+    const meta = (user.user_metadata ?? {}) as { country?: string };
+    const initial = meta.country && COUNTRIES.some((c) => c.code === meta.country) ? meta.country : "NG";
+    setCountry((prev) => prev || initial);
+    setWhatsapp((prev) => prev || dialForCountry(initial));
     // If profile exists, go to dashboard
     supabase.from("vendor_profiles").select("user_id").eq("user_id", user.id).maybeSingle().then(({ data }) => {
       if (data) navigate({ to: "/dashboard" });
@@ -53,6 +58,7 @@ function Onboarding() {
   useEffect(() => {
     if (!slugTouched) setSlug(slugify(businessName));
   }, [businessName, slugTouched]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,12 +154,26 @@ function Onboarding() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="cur">Currency</Label>
-                  <select id="cur" value={currency} onChange={(e) => setCurrency(e.target.value)} className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm">
-                    {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  <Label htmlFor="country">Country</Label>
+                  <select
+                    id="country"
+                    value={country}
+                    onChange={(e) => {
+                      setCountry(e.target.value);
+                      setWhatsapp(dialForCountry(e.target.value));
+                    }}
+                    className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+                  >
+                    {COUNTRIES.map((c) => <option key={c.code} value={c.code}>{c.name}</option>)}
                   </select>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cur">Billing currency</Label>
+                  <Input id="cur" value={currency} readOnly disabled className="bg-muted" />
+                  <p className="text-xs text-muted-foreground">Set by {countryName(country) || "your country"}.</p>
+                </div>
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="desc">Short description (optional)</Label>
                 <Textarea id="desc" maxLength={280} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Fresh meals delivered daily across Lagos." rows={3} />

@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { toast } from "sonner";
 import { Loader2, ShoppingBag } from "lucide-react";
 import { slugify, normalizeWhatsApp } from "@/lib/format";
+import { COUNTRIES, currencyForCountry, countryName, dialForCountry } from "@/lib/countries";
 
 export const Route = createFileRoute("/onboarding")({
   component: Onboarding,

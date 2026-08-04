@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 // Server-authoritative pricing (kobo). Never trust client-sent amounts.
 export const PLAN_PRICING = {
-  hustler: { monthly: 104700, annual: 1047000 }, // ₦1,047 / ₦10,470
+  hustler: { monthly: 99000, annual: 990000 }, // ₦990 / ₦9,900
 } as const;
 
 export type PaidPlan = keyof typeof PLAN_PRICING;

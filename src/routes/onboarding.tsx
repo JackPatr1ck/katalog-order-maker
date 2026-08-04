@@ -26,8 +26,6 @@ const profileSchema = z.object({
   currency: z.string().length(3),
 });
 
-const CURRENCIES = ["USD", "EUR", "GBP", "NGN", "KES", "GHS", "ZAR", "INR", "BRL", "MXN"];
-
 function Onboarding() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -35,9 +33,11 @@ function Onboarding() {
   const [whatsapp, setWhatsapp] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
-  const [currency, setCurrency] = useState("USD");
+  const [country, setCountry] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const currency = currencyForCountry(country);
 
   useEffect(() => {
     if (loading) return;
@@ -45,6 +45,10 @@ function Onboarding() {
       navigate({ to: "/auth" });
       return;
     }
+    const meta = (user.user_metadata ?? {}) as { country?: string };
+    const initial = meta.country && COUNTRIES.some((c) => c.code === meta.country) ? meta.country : "NG";
+    setCountry((prev) => prev || initial);
+    setWhatsapp((prev) => prev || dialForCountry(initial));
     // If profile exists, go to dashboard
     supabase.from("vendor_profiles").select("user_id").eq("user_id", user.id).maybeSingle().then(({ data }) => {
       if (data) navigate({ to: "/dashboard" });
@@ -54,6 +58,7 @@ function Onboarding() {
   useEffect(() => {
     if (!slugTouched) setSlug(slugify(businessName));
   }, [businessName, slugTouched]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

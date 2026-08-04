@@ -27,6 +27,11 @@ const credSchema = z.object({
   password: z.string().min(8, "Min 8 characters").max(72),
 });
 
+const signupSchema = credSchema.extend({
+  full_name: z.string().trim().min(2, "Enter your full name").max(100),
+  country: z.string().trim().length(2, "Select your country"),
+});
+
 function AuthPage() {
   const { mode } = Route.useSearch();
   const navigate = useNavigate();
@@ -34,6 +39,8 @@ function AuthPage() {
   const [isSignup, setIsSignup] = useState(mode === "signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [country, setCountry] = useState("NG");
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -46,6 +53,7 @@ function AuthPage() {
       navigate({ to: data ? "/dashboard" : "/onboarding" });
     })();
   }, [user, authLoading, navigate]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

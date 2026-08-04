@@ -83,7 +83,7 @@ export function WaitlistDialog({ children }: { children: React.ReactNode }) {
             <DialogHeader>
               <DialogTitle className="font-display text-xl">Join the waitlist</DialogTitle>
               <DialogDescription>
-                Get early access to Katalog and be first to launch your WhatsApp storefront.
+                Get early access to Katalog and be first to launch your Online storefront.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={submit} className="space-y-4 pt-2">

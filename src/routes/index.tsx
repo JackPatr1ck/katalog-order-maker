@@ -6,6 +6,8 @@ import { Check, MessageCircle, ShoppingBag, Clock, Image as ImageIcon, Store, Us
 import logo from "@/assets/logo.png";
 import storefrontPreview from "@/assets/storefront-mockup.png.asset.json";
 import analyticsPreview from "@/assets/analytics-preview.png.asset.json";
+import { WaitlistDialog } from "@/components/waitlist-dialog";
+
 
 export const Route = createFileRoute("/")({
   component: Landing,

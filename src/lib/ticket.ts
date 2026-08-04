@@ -203,8 +203,9 @@ export async function uploadTicket(orderId: string, blob: Blob): Promise<string>
   const path = `${orderId}.png`;
   const { error } = await supabase.storage
     .from("order-tickets")
-    .upload(path, blob, { contentType: "image/png", upsert: true });
-  if (error) throw error;
+    .upload(path, blob, { contentType: "image/png", upsert: false });
+  // Ignore duplicate-object errors: the ticket for this order already exists.
+  if (error && !/exists/i.test(error.message)) throw error;
   const { data } = supabase.storage.from("order-tickets").getPublicUrl(path);
   return data.publicUrl;
 }

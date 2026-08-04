@@ -174,12 +174,13 @@ function Landing() {
               Build your catalog, send one link, and let every order land neatly in your inbox.
             </p>
             <div className="mt-8 flex justify-center">
-              <Link to="/auth" search={{ mode: "signup" as const }}>
+              <WaitlistDialog>
                 <Button size="lg" className="rounded-full px-8 shadow-elegant">
                   Join waitlist
                 </Button>
-              </Link>
+              </WaitlistDialog>
             </div>
+
           </div>
         </section>
 

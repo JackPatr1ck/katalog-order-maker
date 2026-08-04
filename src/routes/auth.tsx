@@ -57,22 +57,34 @@ function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = credSchema.safeParse({ email, password });
-    if (!parsed.success) {
-      toast.error(parsed.error.issues[0].message);
-      return;
-    }
     setSubmitting(true);
     try {
       if (isSignup) {
+        const parsed = signupSchema.safeParse({ email, password, full_name: fullName, country });
+        if (!parsed.success) {
+          toast.error(parsed.error.issues[0].message);
+          return;
+        }
         const { error } = await supabase.auth.signUp({
           email: parsed.data.email,
           password: parsed.data.password,
-          options: { emailRedirectTo: window.location.origin + "/onboarding" },
+          options: {
+            emailRedirectTo: window.location.origin + "/onboarding",
+            data: {
+              full_name: parsed.data.full_name,
+              country: parsed.data.country,
+              currency: currencyForCountry(parsed.data.country),
+            },
+          },
         });
         if (error) throw error;
         toast.success("Account created! Let's set up your shop.");
       } else {
+        const parsed = credSchema.safeParse({ email, password });
+        if (!parsed.success) {
+          toast.error(parsed.error.issues[0].message);
+          return;
+        }
         const { error } = await supabase.auth.signInWithPassword(parsed.data);
         if (error) throw error;
         toast.success("Welcome back!");
@@ -87,6 +99,9 @@ function AuthPage() {
 
   const formInner = (
     <>
+      {isSignup && (
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-primary">Step 1 of 2 — Your details</p>
+      )}
       <h1 className="font-display font-bold text-3xl sm:text-4xl lg:text-5xl tracking-tight text-foreground">
         {isSignup ? (
           <>Hey there,<br />Welcome</>
@@ -95,10 +110,44 @@ function AuthPage() {
         )}
       </h1>
       <p className="mt-3 lg:mt-4 text-sm lg:text-base text-muted-foreground">
-        {isSignup ? "Let's set up your shop and start selling on WhatsApp." : "Hey, welcome back to your special place"}
+        {isSignup ? "Tell us about you — next step is your business info." : "Hey, welcome back to your special place"}
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 lg:mt-10 space-y-4">
+        {isSignup && (
+          <>
+            <div className="space-y-1.5">
+              <Label htmlFor="fullName" className="sr-only">Full name</Label>
+              <Input
+                id="fullName"
+                autoComplete="name"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Your full name"
+                maxLength={100}
+                className="h-12 rounded-xl bg-secondary/50 border-border px-4"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="country" className="sr-only">Country</Label>
+              <select
+                id="country"
+                required
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className="h-12 w-full rounded-xl bg-secondary/50 border border-border px-4 text-sm text-foreground"
+              >
+                {COUNTRIES.map((c) => (
+                  <option key={c.code} value={c.code}>{c.name}</option>
+                ))}
+              </select>
+              <p className="px-1 text-xs text-muted-foreground">
+                Billing currency: <span className="font-medium text-foreground">{currencyForCountry(country)}</span>
+              </p>
+            </div>
+          </>
+        )}
         <div className="space-y-1.5">
           <Label htmlFor="email" className="sr-only">Email</Label>
           <Input
@@ -112,6 +161,7 @@ function AuthPage() {
             className="h-12 rounded-xl bg-secondary/50 border-border px-4"
           />
         </div>
+
         <div className="space-y-1.5">
           <Label htmlFor="password" className="sr-only">Password</Label>
           <div className="relative">

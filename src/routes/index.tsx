@@ -6,6 +6,8 @@ import { Check, MessageCircle, ShoppingBag, Clock, Image as ImageIcon, Store, Us
 import logo from "@/assets/logo.png";
 import storefrontPreview from "@/assets/storefront-mockup.png.asset.json";
 import analyticsPreview from "@/assets/analytics-preview.png.asset.json";
+import { WaitlistDialog } from "@/components/waitlist-dialog";
+
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -174,12 +176,13 @@ function Landing() {
               Build your catalog, send one link, and let every order land neatly in your inbox.
             </p>
             <div className="mt-8 flex justify-center">
-              <Link to="/auth" search={{ mode: "signup" as const }}>
+              <WaitlistDialog>
                 <Button size="lg" className="rounded-full px-8 shadow-elegant">
                   Join waitlist
                 </Button>
-              </Link>
+              </WaitlistDialog>
             </div>
+
           </div>
         </section>
 

@@ -210,7 +210,7 @@ function AuthPage() {
           disabled={submitting}
         >
           {submitting && <Loader2 className="size-4 animate-spin mr-2" />}
-          {isSignup ? "Sign Up" : "Sign In"}
+          {isSignup ? "Continue to business info" : "Sign In"}
         </Button>
       </form>
 
